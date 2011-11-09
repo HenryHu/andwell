@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <TableRow android:layout_width="fill_parent" android:layout_gravity="center|center_horizontal" android:gravity="center" android:layout_height="wrap_content" android:id="@+id/TableRow04" android:baselineAligned="false">
+        <TextView android:layout_gravity="center_horizontal" android:layout_width="wrap_content" android:layout_height="match_parent" android:gravity="center" android:textSize="12pt" android:id="@+id/TextView01" android:text="AndWell"></TextView>
+    </TableRow>
+
+<TableLayout android:id="@+id/TableLayout01" android:layout_height="wrap_content" android:layout_width="fill_parent" android:visibility="gone">
+<TableRow android:id="@+id/TableRow01" android:layout_width="fill_parent" android:layout_height="wrap_content">
+<TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Username:" android:layout_gravity="center"></TextView>
+<EditText android:id="@+id/tUsername" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="text" android:layout_weight="1" android:text=""></EditText>
+
+</TableRow>
+<TableRow android:id="@+id/TableRow02" android:layout_width="fill_parent" android:layout_height="wrap_content">
+<TextView android:id="@+id/TextView04" android:layout_height="wrap_content" android:text="Password:" android:layout_gravity="center" android:layout_width="wrap_content"></TextView>
+<EditText android:id="@+id/tPassword" android:layout_width="wrap_content" android:layout_height="wrap_content" android:inputType="textPassword" android:layout_weight="1"></EditText>
+</TableRow>
+
+</TableLayout>
+
+
+<TableLayout android:id="@+id/TableLayout02" android:layout_height="wrap_content" android:layout_width="fill_parent" android:visibility="gone">
+<TableRow android:id="@+id/TableRow05" android:layout_width="wrap_content" android:layout_height="wrap_content">
+<CheckBox android:id="@+id/cAutoLogin" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" android:text="Auto Login"></CheckBox>
+<CheckBox android:id="@+id/cSavePwd" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Remember Password" android:layout_column="2" android:layout_weight="1"></CheckBox>
+
+</TableRow>
+<TableRow android:id="@+id/TableRow03" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_gravity="right" android:gravity="center">
+<Button android:id="@+id/bLogin" android:layout_height="wrap_content" android:text="Login" android:layout_width="fill_parent" android:layout_weight="1"></Button>
+
+
+</TableRow>
+
+</TableLayout>
+<TableRow android:id="@+id/TableRow04" android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_gravity="right" android:gravity="center">
+<Button android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1" android:text="@string/getauthcode_btn" android:id="@+id/bGetOAuthCode"></Button>
+
+
+</TableRow>
+<TableRow android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/tableRow1">
+<TextView android:id="@+id/tLACode" android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="9pt" android:paddingLeft="4pt" android:text="@string/authcode_label"></TextView>
+</TableRow>
+<TableRow android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/tableRow2">
+    <EditText android:layout_height="wrap_content" android:inputType="number" android:layout_width="match_parent" android:id="@+id/tOAuthCode">
+        <requestFocus></requestFocus>
+    </EditText>
+</TableRow>
+<TableRow android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/tableRow3">
+    <Button android:layout_height="wrap_content" android:layout_width="match_parent" android:text="@string/loginoauth_btn" android:id="@+id/bLoginOAuth"></Button>
+</TableRow>
+
+<TextView android:id="@+id/tStatus" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text = "welcome" android:textSize="9pt" android:paddingLeft="4pt"></TextView>
+</LinearLayout>

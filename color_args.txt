@@ -1,0 +1,35 @@
+0 	Reset / Normal 	all attributes off
+1 	Bright (increased intensity) or Bold 	
+4 	Underline: Single 	
+7 	Image: Negative 	inverse or reverse; swap foreground and background
+30–37 	Set text color 	30 + x, where x is from the color table below
+40–47 	Set background color 	40 + x, where x is from the color table below
+# 2 	Faint (decreased intensity) 	not widely supported
+# 3 	Italic: on 	not widely supported. Sometimes treated as inverse.
+# 5 	Blink: Slow 	less than 150 per minute
+# 6 	Blink: Rapid 	MS-DOS ANSI.SYS; 150 per minute or more; not widely supported
+# 8 	Conceal 	not widely supported
+# 9 	Crossed-out 	Characters legible, but marked for deletion. Not widely supported.
+# 10 	Primary(default) font 	
+# 11-19 	n-th alternate font 	Select the n-th alternate font. 14 being the fourth alternate font, up to 19 being the 9th alternate font.
+# 20 	Fraktur hardly ever supported
+# 21 	Bright/Bold: off or Underline: Double 	bold off not widely supported, double underline hardly ever
+# 22 	Normal color or intensity 	neither bright, bold nor faint
+# 23 	Not italic, not Fraktur 	
+# 24 	Underline: None 	not singly or doubly underlined
+# 25 	Blink: off 	
+# 26 	Reserved 	
+# 27 	Image: Positive 	
+# 28 	Reveal 	conceal off
+# 29 	Not crossed out 	
+# 38 	Set xterm-256 text color[dubious – discuss] 	next arguments are 5;x where x is color index (0..255)
+# 39 	Default text color 	implementation defined (according to standard)
+# 48 	Set xterm-256 background color 	next arguments are 5;x where x is color index (0..255)
+# 49 	Default background color 	implementation defined (according to standard)
+# 50 	Reserved 	
+# 51 	Framed 	
+# 52 	Encircled 	
+# 53 	Overlined 	
+# 54 	Not framed or encircled 	
+# 55 	Not overlined 	
+# 56-59 	Reserved 	

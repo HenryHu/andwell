@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent" android:orientation="vertical">
+    <ScrollView android:layout_height="match_parent" android:id="@+id/scrollView1" android:layout_weight="1" android:layout_width="match_parent">
+        <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+                <TextView android:id="@+id/tContent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:typeface="monospace"></TextView>
+                <HorizontalScrollView android:id="@+id/horizontalScrollView1" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                    <TextView android:layout_height="match_parent" android:id="@+id/tQMD" android:layout_width="match_parent" android:typeface="monospace" android:maxWidth="640dp"></TextView>
+                </HorizontalScrollView>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout2" android:layout_width="match_parent"></LinearLayout>
+    <TableLayout android:id="@+id/tableLayout1" android:layout_width="match_parent" android:layout_gravity="center|bottom" android:layout_height="wrap_content" android:layout_weight="0.1">
+        <TableRow android:id="@+id/tableRow1" android:layout_gravity="center" android:layout_height="wrap_content" android:layout_width="match_parent">
+            <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_height="wrap_content" android:layout_weight="1">
+                <ImageButton android:layout_width="wrap_content" android:src="@drawable/ic_media_rew" android:id="@+id/bPrev_PostView" android:layout_height="wrap_content" android:layout_weight="1"></ImageButton>
+                <ImageButton android:layout_width="wrap_content" android:src="@drawable/ic_media_ff" android:id="@+id/bNext_PostView" android:layout_height="wrap_content" android:layout_weight="1"></ImageButton>
+                <ImageButton android:layout_gravity="right" android:src="@drawable/stat_sys_upload" android:id="@+id/bUp_PostView" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="wrap_content"></ImageButton>
+                <ImageButton android:src="@drawable/stat_sys_download" android:id="@+id/bDown_PostView" android:layout_height="wrap_content" android:layout_gravity="right" android:layout_weight="1" android:layout_width="wrap_content"></ImageButton>
+            </LinearLayout>
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>
