@@ -143,8 +143,8 @@ public class Auth {
 	{
 		RequestArgs args = new RequestArgs("");
 		args.add("grant_type", "authorization_code");
-		args.add("client_id", Utils.OAuthClientID);
-		args.add("client_secret", Utils.OAuthClientSecret);
+		args.add("client_id", Defs.OAuthClientID);
+		args.add("client_secret", Defs.OAuthClientSecret);
 		args.add("code", code);
 		args.add("redirect_uri", Utils.OAuthRedirectURI);
 		

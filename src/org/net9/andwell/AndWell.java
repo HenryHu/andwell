@@ -148,8 +148,8 @@ public class AndWell extends Activity implements AuthHandler {
     
     public void doLoginOAuth()
     {
-    	String url = Utils.basePath + "/auth/auth?response_type=code&client_id="
-    	+ Utils.OAuthClientID + "&redirect_uri="
+    	String url = Defs.basePath + "/auth/auth?response_type=code&client_id="
+    	+ Defs.OAuthClientID + "&redirect_uri="
     	+ Utils.OAuthRedirectURI;
     	Intent i = new Intent(Intent.ACTION_VIEW);
     	i.setData(Uri.parse(url));
