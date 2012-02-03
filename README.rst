@@ -4,7 +4,8 @@ AndWell
 
 Android client for accessing BBS with its API.
 
-* Build
+Build
+-----
 
 You may find that it fails to build.
 Because you need to create Defs.java by hand.
