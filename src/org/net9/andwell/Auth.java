@@ -93,13 +93,13 @@ public class Auth {
 		}
 	};
 	
-	public static boolean reauth(String token, Handler handler, AuthHandler ctx)
+	public static boolean reauth(String basePath, String token, Handler handler, AuthHandler ctx)
 	{
 		RequestArgs args = new RequestArgs(token);
 		
 		HttpResponse resp = null;
 		try {
-			resp = Utils.doGet("/session/verify", args.getValue());
+			resp = Utils.doGet(basePath, "/session/verify", args.getValue());
 		}
 		catch (IOException e)
 		{
@@ -139,18 +139,18 @@ public class Auth {
 		}
 	}
 	
-	public static boolean oauth(String code, Handler handler, AuthHandler ctx)
+	public static boolean oauth(String basePath, String code, Handler handler, AuthHandler ctx)
 	{
 		RequestArgs args = new RequestArgs("");
 		args.add("grant_type", "authorization_code");
 		args.add("client_id", Defs.OAuthClientID);
 		args.add("client_secret", Defs.OAuthClientSecret);
 		args.add("code", code);
-		args.add("redirect_uri", Utils.OAuthRedirectURI);
+		args.add("redirect_uri", Utils.getOAuthRedirectURI(basePath));
 		
 		HttpResponse resp = null;
 		try {
-			resp = Utils.doGet("/auth/token", args.getValue());
+			resp = Utils.doGet(basePath, "/auth/token", args.getValue());
 		}
 		catch (IOException e)
 		{
@@ -188,7 +188,7 @@ public class Auth {
 	}
 	
 	public static boolean auth(String name, String pass, Handler handler,
-			final AuthHandler ctx)
+			final AuthHandler ctx, final String basePath)
 	{
 		String epwd = Base64.encodeToString(pass.getBytes(), Base64.DEFAULT);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -197,7 +197,7 @@ public class Auth {
 
 		HttpResponse resp = null;
 		try {
-			resp = Utils.doPost("/auth/pwauth", params);
+			resp = Utils.doPost(basePath, "/auth/pwauth", params);
 		}
 		catch (final IOException e)
 		{
@@ -234,57 +234,61 @@ public class Auth {
 	}
 	
 	static Thread doAuth(final String name, final String pass, 
-			final Handler handler, final AuthHandler ctx)
+			final Handler handler, final AuthHandler ctx, final String basePath)
 	{
 		Runnable runnable = new Runnable() {
 			public void run() {
-				auth(name, pass, handler, ctx);
+				auth(name, pass, handler, ctx, basePath);
 			}
 		};
 		return startThread(runnable);
 	}
 	
-	static Thread doOAuth(String code, Handler handler, AuthHandler ctx)
+	static Thread doOAuth(String code, Handler handler, AuthHandler ctx, String basePath)
 	{
-		return startThread(new OAuthRunnable(code, handler, ctx));
+		return startThread(new OAuthRunnable(code, handler, ctx, basePath));
 	}
 	
 	static class OAuthRunnable implements Runnable {
 		private String code;
 		private AuthHandler ctx;
 		private Handler handler;
+		private String basePath;
 		
-		public OAuthRunnable(String _code, Handler _handler, AuthHandler _ctx)
+		public OAuthRunnable(String _code, Handler _handler, AuthHandler _ctx, String _basePath)
 		{
 			code = _code;
 			ctx = _ctx;
 			handler = _handler;
+			basePath = _basePath;
 		}
 		
 		public void run() {
-			oauth(code, handler, ctx);
+			oauth(basePath, code, handler, ctx);
 		}
 	}
 	
-	static Thread doReauth(String token, Handler handler, AuthHandler ctx)
+	static Thread doReauth(String token, Handler handler, AuthHandler ctx, String basePath)
 	{
-		return startThread(new ReauthRunnable(token, handler, ctx));
+		return startThread(new ReauthRunnable(token, handler, ctx, basePath));
 	}
 	
 	static class ReauthRunnable implements Runnable {
 		private AuthHandler ctx;
 		private Handler handler;
 		private String token;
+		private String basePath;
 		
-		public ReauthRunnable(String _token, Handler _handler, AuthHandler _ctx)
+		public ReauthRunnable(String _token, Handler _handler, AuthHandler _ctx, String _basePath)
 		{
 			ctx = _ctx;
 			handler = _handler;
 			token = _token;
+			basePath = _basePath;
 		}
 		
 		public void run() {
-			reauth(token, handler, ctx);
+			reauth(basePath, token, handler, ctx);
 		}
 	}
 

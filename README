@@ -7,7 +7,6 @@ File content:
 package org.net9.andwell;
 
 public class Defs {
-    public static final String basePath = "<base path to the service>";
     public static final String OAuthClientID = "<OAuth client id>";
     public static final String OAuthClientSecret = "<OAuth client secret>";
 }

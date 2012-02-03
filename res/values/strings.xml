@@ -8,4 +8,9 @@
     <string name="authcode_label">Authorization Code:</string>
     <string name="getauthcode_btn">Get Authorization Code</string>
     <string name="loginoauth_btn">Login with OAuth</string>
+    <string name="label_server_api">Server API:</string>
+    <string name="text_server_api_hint">e.g. http://www.example.com/</string>
+    <string name="text_auth_code_hint">e.g. 12345678</string>
+    <string name="label_status">Welcome!</string>
+    <string name="app_shortname">AndWell</string>
 </resources>

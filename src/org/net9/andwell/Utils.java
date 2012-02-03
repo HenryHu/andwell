@@ -29,7 +29,12 @@ import android.util.Log;
 
 public class Utils {
 	public static final String PREFS_FILE = "MainPref";
-	public static String OAuthRedirectURI = Defs.basePath + "/auth/displaycode";
+
+	public static String getOAuthRedirectURI(String basePath)
+	{
+		return basePath + "/auth/displaycode";
+	}
+
 	public static HttpClient getNewHttpClient() {
 	    try {
 	        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -52,14 +57,14 @@ public class Utils {
 	    }
 	}
 
-	public static HttpResponse doGet(String path, List<NameValuePair> params)
+	public static HttpResponse doGet(String basePath, String path, List<NameValuePair> params)
 	throws IOException 
 	{
 		String args = URLEncodedUtils.format(params, "UTF-8");
 		
-		HttpGet get = new HttpGet(Defs.basePath + path + "?" + args);
+		HttpGet get = new HttpGet(basePath + path + "?" + args);
 		
-		Log.d("get path", Defs.basePath + path + "?" + args);
+		Log.d("get path", basePath + path + "?" + args);
 		
 		HttpClient hc = Utils.getNewHttpClient();
 		HttpResponse resp = null;
@@ -67,10 +72,10 @@ public class Utils {
 		return resp;
 	}
 
-	public static HttpResponse doPost(String path, List<NameValuePair> params)
+	public static HttpResponse doPost(String basePath, String path, List<NameValuePair> params)
 	throws IOException 
 	{
-		HttpPost post = new HttpPost(Defs.basePath + path);
+		HttpPost post = new HttpPost(basePath + path);
 		StringEntity ent = null;
 		try {
 			ent = new StringEntity(URLEncodedUtils.format(params, "UTF-8"));
