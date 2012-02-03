@@ -1,4 +1,4 @@
-package org.net9.andwell;
+package net.henryhu.andwell;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import net.henryhu.andwell.R;
 
 import android.app.Activity;
 import android.app.Dialog;
