@@ -71,6 +71,7 @@ public class AndWell extends Activity implements AuthHandler {
     void loadSettings()
     {
 		tServer.setText(pref.getString("server_api", ""));
+		basePath = pref.getString("server_api", "");
 /*    	tUsername.setText(pref.getString("username", ""));
         Boolean save_pw = pref.getBoolean("save_password", false);
         cSavePwd.setChecked(save_pw);
