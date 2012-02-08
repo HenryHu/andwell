@@ -1,4 +1,4 @@
-package org.net9.andwell;
+package net.henryhu.andwell;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
+import net.henryhu.andwell.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,6 +32,7 @@ public class PostViewActivity extends Activity {
 	TextView tQMD = null;
 	ImageButton bPrev = null, bNext = null, bUp = null, bDown = null;
 	float target_prop;
+	String basePath;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class PostViewActivity extends Activity {
         bDown.setOnClickListener(new ButtonClickListener(false));
         bPrev.setOnClickListener(new ThreadClickListener(false));
         bNext.setOnClickListener(new ThreadClickListener(true));
+		basePath = pref.getString("server_api", "");
         
         TextPaint tp = tQMD.getPaint();
         StringBuilder sb = new StringBuilder();
@@ -125,7 +128,7 @@ public class PostViewActivity extends Activity {
     		args.add("board", pref.getString("board", "test"));
     		
     		try {
-    			HttpResponse resp = Utils.doGet("/post/view", args.getValue());
+    			HttpResponse resp = Utils.doGet(basePath, "/post/view", args.getValue());
     			int respCode = resp.getStatusLine().getStatusCode();
     			if (respCode == 200)
     			{
@@ -203,7 +206,7 @@ public class PostViewActivity extends Activity {
     			args.add("direction", "backward");
     		
     		try {
-    			HttpResponse resp = Utils.doGet("/post/nextid", args.getValue());
+    			HttpResponse resp = Utils.doGet(basePath, "/post/nextid", args.getValue());
     			int retCode = resp.getStatusLine().getStatusCode();
     			if (retCode == 200)
     			{

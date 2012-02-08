@@ -1,6 +1,8 @@
-package org.net9.andwell;
+package net.henryhu.andwell;
 
 import java.io.*;
+
+import net.henryhu.andwell.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -15,12 +17,13 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 
 public class AndWell extends Activity implements AuthHandler {
-	private EditText tUsername = null;
-	private EditText tPassword = null;
+//	private EditText tUsername = null;
+//	private EditText tPassword = null;
+	private EditText tServer = null;
 	private TextView tStatus = null;
-	private CheckBox cSavePwd = null;
-	private CheckBox cAutoLogin = null;
-	private Button bLogin = null;
+//	private CheckBox cSavePwd = null;
+//	private CheckBox cAutoLogin = null;
+//	private Button bLogin = null;
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	private final Handler handler = new Handler();
@@ -28,6 +31,7 @@ public class AndWell extends Activity implements AuthHandler {
 	private Button bLoginOAuth = null;
 	private Button bGetOAuthCode = null;
 	private EditText tOAuthCode = null;
+	String basePath = "";
 	
     /** Called when the activity is first created. */
     @Override
@@ -37,22 +41,23 @@ public class AndWell extends Activity implements AuthHandler {
         myAct = this;
     	pref = getSharedPreferences(Utils.PREFS_FILE, MODE_PRIVATE);
     	
-        bLogin = (Button)findViewById(R.id.bLogin);
-        tUsername = (EditText)findViewById(R.id.tUsername);
-        tPassword = (EditText)findViewById(R.id.tPassword);
+//        bLogin = (Button)findViewById(R.id.bLogin);
+//        tUsername = (EditText)findViewById(R.id.tUsername);
+//        tPassword = (EditText)findViewById(R.id.tPassword);
         tStatus = (TextView)findViewById(R.id.tStatus);
-        cSavePwd = (CheckBox)findViewById(R.id.cSavePwd);
-        cAutoLogin = (CheckBox)findViewById(R.id.cAutoLogin);
+		tServer = (EditText)findViewById(R.id.tServerAPI);
+//        cSavePwd = (CheckBox)findViewById(R.id.cSavePwd);
+//        cAutoLogin = (CheckBox)findViewById(R.id.cAutoLogin);
         
         bLoginOAuth = (Button)findViewById(R.id.bLoginOAuth);
         bGetOAuthCode = (Button)findViewById(R.id.bGetOAuthCode);
         tOAuthCode = (EditText)findViewById(R.id.tOAuthCode);
         
-        bLogin.setOnClickListener(loginListener);
+//        bLogin.setOnClickListener(loginListener);
         bLoginOAuth.setOnClickListener(loginOAuthListener);
         bGetOAuthCode.setOnClickListener(getOAuthCodeListener);
         
-        LoadSettings();
+        loadSettings();
 /*        if (pref.getBoolean("auto_login", true))
         	doLogin();*/
         TryRelogin();
@@ -65,9 +70,11 @@ public class AndWell extends Activity implements AuthHandler {
     	loginDialog = null;
     }
     
-    void LoadSettings()
+    void loadSettings()
     {
-    	tUsername.setText(pref.getString("username", ""));
+		tServer.setText(pref.getString("server_api", ""));
+		basePath = pref.getString("server_api", "");
+/*    	tUsername.setText(pref.getString("username", ""));
         Boolean save_pw = pref.getBoolean("save_password", false);
         cSavePwd.setChecked(save_pw);
         if (save_pw)
@@ -75,30 +82,40 @@ public class AndWell extends Activity implements AuthHandler {
         	tPassword.setText(pref.getString("password", ""));
         }
         Boolean auto_login = pref.getBoolean("auto_login", false);
-        cAutoLogin.setChecked(auto_login);
+        cAutoLogin.setChecked(auto_login);*/
     }
     
     void TryRelogin()
     {
+		if (basePath.equals(""))
+			return;
+
     	if (pref.getString("token", "").equals(""))
     		return;
     	
     	loginDialog = ProgressDialog.show(myAct, "Log In", "Logging in...");
-    	Auth.doReauth(pref.getString("token", ""), handler, (AuthHandler)myAct);
+		Auth.doReauth(pref.getString("token", ""), handler, (AuthHandler)myAct, basePath);
     }
-    
-    protected void onPause() {
-        super.onPause();
 
+	void saveSettings()
+	{
         SharedPreferences.Editor ed = pref.edit();
-        ed.putString("username", tUsername.getText().toString());
+		ed.putString("server_api", tServer.getText().toString());
+/*        ed.putString("username", tUsername.getText().toString());
         ed.putBoolean("save_password", cSavePwd.isChecked());
         ed.putBoolean("auto_login", cAutoLogin.isChecked());
         if (cSavePwd.isChecked())
         	ed.putString("password", tPassword.getText().toString());
         else
-        	ed.putString("password", "");
+        	ed.putString("password", "");*/
         ed.commit();
+	}
+    
+    protected void onPause() {
+        super.onPause();
+
+		saveSettings();
+
     }
 
     void showToast(String text)
@@ -112,13 +129,13 @@ public class AndWell extends Activity implements AuthHandler {
 		toast.show();
     }
     
-    private OnClickListener loginListener = new OnClickListener()
+/*    private OnClickListener loginListener = new OnClickListener()
     {
 		@Override
 		public void onClick(View arg0) {
 			doLogin();
 		}
-    };
+    };*/
     
     private OnClickListener loginOAuthListener = new OnClickListener()
     {
@@ -136,7 +153,7 @@ public class AndWell extends Activity implements AuthHandler {
     	}
     };
     
-    public void doLogin()
+/*    public void doLogin()
     {
     	loginDialog = ProgressDialog.show(myAct, "Log In", "Logging in...");
 		
@@ -144,13 +161,15 @@ public class AndWell extends Activity implements AuthHandler {
 		String pass = tPassword.getText().toString();
 		
 		Auth.doAuth(name, pass, handler, (AuthHandler)myAct);
-    }
+    }*/
     
     public void doLoginOAuth()
     {
-    	String url = Defs.basePath + "/auth/auth?response_type=code&client_id="
+		saveSettings();
+		basePath = pref.getString("server_api", "");
+    	String url = basePath + "/auth/auth?response_type=code&client_id="
     	+ Defs.OAuthClientID + "&redirect_uri="
-    	+ Utils.OAuthRedirectURI;
+    	+ Utils.getOAuthRedirectURI(basePath);
     	Intent i = new Intent(Intent.ACTION_VIEW);
     	i.setData(Uri.parse(url));
     	startActivity(i);
@@ -207,7 +226,7 @@ public class AndWell extends Activity implements AuthHandler {
     void onOAuthGotCode(String code)
     {
     	loginDialog = ProgressDialog.show(myAct, "Log In", "Logging in...");
-    	Auth.doOAuth(code, handler, (AuthHandler)myAct);
+    	Auth.doOAuth(code, handler, (AuthHandler)myAct, basePath);
     }
 
 }

@@ -1,4 +1,4 @@
-package org.net9.andwell;
+package net.henryhu.andwell;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import net.henryhu.andwell.R;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -33,6 +34,7 @@ public class BoardsActivity extends ListActivity {
 	List<BoardItem> boardslist = new ArrayList<BoardItem>();
 	ProgressDialog loadDialog;
 	ArrayAdapter<BoardItem> adapter;
+	String basePath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class BoardsActivity extends ListActivity {
         
         ListView lv = getListView();
         lv.setTextFilterEnabled(true);
+		basePath = pref.getString("server_api", "");
         
         lv.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -83,7 +86,7 @@ public class BoardsActivity extends ListActivity {
     		args.add("count", "100000");
     		
     		try {
-    			HttpResponse resp = Utils.doGet("/board/list", args.getValue());
+    			HttpResponse resp = Utils.doGet(basePath, "/board/list", args.getValue());
     			if (resp.getStatusLine().getStatusCode() == 200)
     			{
     				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
@@ -146,7 +149,7 @@ public class BoardsActivity extends ListActivity {
     		args.add("count", "100000");
     		
     		try {
-    			HttpResponse resp = Utils.doGet("/favboard/list", args.getValue());
+    			HttpResponse resp = Utils.doGet(basePath, "/favboard/list", args.getValue());
     			if (resp.getStatusLine().getStatusCode() == 200)
     			{
     				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));

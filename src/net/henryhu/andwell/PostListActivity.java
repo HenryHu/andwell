@@ -1,4 +1,4 @@
-package org.net9.andwell;
+package net.henryhu.andwell;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import net.henryhu.andwell.R;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -44,6 +45,7 @@ public class PostListActivity extends ListActivity {
 	static final int INPUT_DIALOG_ID = 0;
 	Dialog inputDialog = null;
 	EditText tValue = null;
+	String basePath;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class PostListActivity extends ListActivity {
         
         ListView lv = getListView();
         lv.setTextFilterEnabled(true);
+		basePath = pref.getString("server_api", "");
         
         lv.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -202,7 +205,7 @@ public class PostListActivity extends ListActivity {
     			errMsg = "no more post";
     		
     		try {
-    			HttpResponse resp = Utils.doGet("/board/post_list", args.getValue());
+    			HttpResponse resp = Utils.doGet(basePath, "/board/post_list", args.getValue());
     			if (resp.getStatusLine().getStatusCode() == 200)
     			{
     				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
@@ -303,7 +306,7 @@ public class PostListActivity extends ListActivity {
    			args.add("count", "1");
     		
     		try {
-    			HttpResponse resp = Utils.doGet("/board/post_list", args.getValue());
+    			HttpResponse resp = Utils.doGet(basePath, "/board/post_list", args.getValue());
     			if (resp.getStatusLine().getStatusCode() == 200)
     			{
     				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
