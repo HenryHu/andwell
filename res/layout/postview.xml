@@ -15,10 +15,40 @@
     <TableLayout android:id="@+id/tableLayout1" android:layout_width="match_parent" android:layout_gravity="center|bottom" android:layout_height="wrap_content" android:layout_weight="0.1">
         <TableRow android:id="@+id/tableRow1" android:layout_gravity="center" android:layout_height="wrap_content" android:layout_width="match_parent">
             <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_height="wrap_content" android:layout_weight="1">
-                <ImageButton android:layout_width="wrap_content" android:src="@drawable/ic_media_rew" android:id="@+id/bPrev_PostView" android:layout_height="wrap_content" android:layout_weight="1"></ImageButton>
-                <ImageButton android:layout_width="wrap_content" android:src="@drawable/ic_media_ff" android:id="@+id/bNext_PostView" android:layout_height="wrap_content" android:layout_weight="1"></ImageButton>
-                <ImageButton android:layout_gravity="right" android:src="@drawable/stat_sys_upload" android:id="@+id/bUp_PostView" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="wrap_content"></ImageButton>
-                <ImageButton android:src="@drawable/stat_sys_download" android:id="@+id/bDown_PostView" android:layout_height="wrap_content" android:layout_gravity="right" android:layout_weight="1" android:layout_width="wrap_content"></ImageButton>
+
+                <Button
+                    android:id="@+id/bPrev_PostView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/bPrev" >
+</Button>
+
+                <Button
+                    android:id="@+id/bNext_PostView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/bNext_caption" >
+</Button>
+
+                <Button
+                    android:id="@+id/bUp_PostView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:text="@string/bUp_caption" >
+</Button>
+
+                <Button
+                    android:id="@+id/bDown_PostView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_weight="1"
+                    android:text="@string/bDown_caption" >
+</Button>
             </LinearLayout>
         </TableRow>
     </TableLayout>
