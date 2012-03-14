@@ -13,4 +13,8 @@
     <string name="text_auth_code_hint">e.g. 12345678</string>
     <string name="label_status">Welcome!</string>
     <string name="app_shortname">AndWell</string>
+    <string name="bPrev">Prev</string>
+    <string name="bNext_caption">Next</string>
+    <string name="bUp_caption">Former</string>
+    <string name="bDown_caption">Later</string>
 </resources>

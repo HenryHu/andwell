@@ -20,6 +20,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ public class PostViewActivity extends Activity {
 	ProgressDialog loadDialog;
 	TextView tContent = null;
 	TextView tQMD = null;
-	ImageButton bPrev = null, bNext = null, bUp = null, bDown = null;
+	Button bPrev = null, bNext = null, bUp = null, bDown = null;
 	float target_prop;
 	String basePath;
 	
@@ -42,10 +43,10 @@ public class PostViewActivity extends Activity {
         setContentView(R.layout.postview);
         tContent = (TextView)findViewById(R.id.tContent);
         tQMD = (TextView)findViewById(R.id.tQMD);
-        bPrev = (ImageButton)findViewById(R.id.bPrev_PostView);
-        bNext = (ImageButton)findViewById(R.id.bNext_PostView);
-        bUp = (ImageButton)findViewById(R.id.bUp_PostView);
-        bDown = (ImageButton)findViewById(R.id.bDown_PostView);
+        bPrev = (Button)findViewById(R.id.bPrev_PostView);
+        bNext = (Button)findViewById(R.id.bNext_PostView);
+        bUp = (Button)findViewById(R.id.bUp_PostView);
+        bDown = (Button)findViewById(R.id.bDown_PostView);
         bUp.setOnClickListener(new ButtonClickListener(true));
         bDown.setOnClickListener(new ButtonClickListener(false));
         bPrev.setOnClickListener(new ThreadClickListener(false));
