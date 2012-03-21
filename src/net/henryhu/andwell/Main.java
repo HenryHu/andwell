@@ -6,11 +6,15 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 public class Main extends ListActivity {
@@ -55,4 +59,35 @@ public class Main extends ListActivity {
 
     }
     
+    void logout()
+    {
+    	Editor edit = pref.edit();
+    	edit.remove("token");
+    	edit.commit();
+		Intent intent = new Intent(myAct, AndWell.class);
+		startActivity(intent);
+
+    	this.finish();
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+    	MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.main_optmenu, menu);
+    	return true;
+    }
+    
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+        case R.id.main_optmenu_logout:
+            logout();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
 }
