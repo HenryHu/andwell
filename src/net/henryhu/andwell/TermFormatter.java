@@ -74,6 +74,7 @@ public class TermFormatter {
 		private boolean _bright;
 		private int _back;
 		private boolean _negative;
+		private boolean _halfchar;
 		static final int DEF_FORE_COLOR = 7;
 		static final int DEF_BACK_COLOR = 0;
 		Color(int color, int back)
@@ -82,6 +83,7 @@ public class TermFormatter {
 			_back = back;
 			_bright = false;
 			_negative = false;
+			_halfchar = false;
 		}
 		
 		public int getTermColor(int color, boolean bright)
@@ -130,6 +132,11 @@ public class TermFormatter {
 				start();
 				_back = back;
 			}
+		}
+		
+		void halfChar()
+		{
+			_halfchar = true;
 		}
 		
 		public Object[] getSpan()
@@ -206,6 +213,10 @@ public class TermFormatter {
 			if (arg >= 40 && arg <= 47)
 			{
 				color.setBack(arg - 40);
+			} else
+			if (arg == 50) {
+				// half-char color
+				color.halfChar();
 			} else {
 				// not supported
 			}
