@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/mReply_PostList" android:title="@string/postlist_contextmenu_reply" android:titleCondensed="@string/postlist_contextmenu_reply"></item>
+    <item android:id="@+id/mRModeReply_PostList" android:title="@string/postlist_contextmenu_rreply" android:titleCondensed="@string/postlist_contextmenu_rreply_short"></item>
+    
+
+</menu>

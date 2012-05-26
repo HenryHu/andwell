@@ -26,6 +26,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 import android.util.Log;
+import android.util.Pair;
 
 public class Utils {
 	public static final String PREFS_FILE = "MainPref";
@@ -109,6 +110,19 @@ public class Utils {
 		}
 		br.close();
 		return sb.toString();
+	}
+	
+	public static Pair<String, String> parseResult(HttpResponse resp) {
+		int respCode = resp.getStatusLine().getStatusCode();
+		if (respCode == 200)
+		{
+			return new Pair<String, String>("OK", "");
+		} else {
+			if (respCode == 416)
+				return new Pair<String, String>("OUT OF RANGE", "");
+			else
+				return new Pair<String, String>(resp.getStatusLine().getReasonPhrase(), "");
+		}
 	}
 
 }

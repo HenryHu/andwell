@@ -22,6 +22,11 @@ public class RequestArgs {
 		value.add(new BasicNameValuePair(item, val));
 	}
 	
+	public void add(String item, int val)
+	{
+		add(item, String.valueOf(val));
+	}
+	
 	public List<NameValuePair> getValue()
 	{
 		return value;

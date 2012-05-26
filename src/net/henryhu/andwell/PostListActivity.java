@@ -22,12 +22,15 @@ import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -92,6 +95,7 @@ public class PostListActivity extends ListActivity {
             }
           });
         
+        registerForContextMenu(getListView());
         if (!pref.contains("post_id"))
         	loadPosts(0, 20, 0, 0);
     }
@@ -159,6 +163,29 @@ public class PostListActivity extends ListActivity {
     }
     
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.postlist_context, menu);
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.mReply_PostList:
+            	doReply(info.id, false);
+                return true;
+            case R.id.mRModeReply_PostList:
+                doReply(info.id, true);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+    
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
@@ -168,9 +195,18 @@ public class PostListActivity extends ListActivity {
         case R.id.mJumpTo_PostList:
         	showDialog(INPUT_DIALOG_ID);
         	return true;
+        case R.id.mPostNew_PostList:
+        	newPost();
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+    
+    void newPost() {
+    	Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
+    	intent.putExtra("board", pref.getString("board", "test"));
+    	startActivity(intent);
     }
     
     void loadPosts(int start, int count, int end, int selectid)
@@ -290,6 +326,10 @@ public class PostListActivity extends ListActivity {
     public void updatePostItem(int position)
     {
     	new updatePostItemTask().execute(position, postslist.get(position).id());
+    }
+    
+    public void doReply(long id, boolean rmode) {
+    	
     }
 
     private class updatePostItemTask extends AsyncTask<Integer, Integer, Pair<String, Object>> {

@@ -16,6 +16,7 @@
         <activity android:name=".BoardsActivity"></activity>
         <activity android:name=".PostListActivity"></activity>
         <activity android:name="net.henryhu.andwell.PostViewActivity"></activity>
+        <activity android:name="NewPostActivity"></activity>
 
     </application>
 

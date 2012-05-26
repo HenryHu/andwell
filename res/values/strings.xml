@@ -17,4 +17,14 @@
     <string name="bNext_caption">Next</string>
     <string name="bUp_caption">Former</string>
     <string name="bDown_caption">Later</string>
+    <string name="new_postlist">New Post</string>
+    <string name="new_postlist_short">Post</string>
+    <string name="newpost_title_label">Title:</string>
+    <string name="newpost_post">Post</string>
+    <string name="newpost_cancel">Cancel</string>
+    <string name="newpost_qmd_label">&quot;Qmd#&quot;</string>
+    <string name="newpost_anony">Anonymous</string>
+    <string name="postlist_contextmenu_reply">Reply</string>
+    <string name="postlist_contextmenu_rreply">R Mode Reply</string>
+    <string name="postlist_contextmenu_rreply_short">R Reply</string>
 </resources>
