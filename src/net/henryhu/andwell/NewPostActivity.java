@@ -6,6 +6,7 @@ import org.apache.http.HttpResponse;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -28,6 +29,7 @@ public class NewPostActivity extends Activity {
 	Button cancel_btn;
 	
 	String basePath;
+	ProgressDialog busyDialog = null;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class NewPostActivity extends Activity {
         String content = getIntent().getExtras().getString("content");
         if (content != null)
         	content_in.setText(content);
+        qmd_in.setText(pref.getString("qmd_id", ""));
         
         post_btn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -74,6 +77,7 @@ public class NewPostActivity extends Activity {
 		       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		        	   if (item.equals("cancel")) {
+		        		   setResult(RESULT_CANCELED);
 		        		   finish();
 		        	   } else if (item.equals("post")) {
 		        		   doPost();
@@ -104,6 +108,7 @@ public class NewPostActivity extends Activity {
 			showMsg("Please input title");
 			return;
 		}
+		pref.edit().putString("qmd_id", qmd_in.getText().toString()).commit();
 		
 		int re_id = this.getIntent().getExtras().getInt("re_id");
 		int re_xid = this.getIntent().getExtras().getInt("re_xid");
@@ -141,19 +146,49 @@ public class NewPostActivity extends Activity {
     		}
 		}
 		
+		protected void onPreExecute() {
+			showBusy("Please wait...", "Posting...");
+		}
+		
 		protected void onPostExecute(Pair<String, String> result)
     	{
-/*    		if (loadDialog != null)
-    			loadDialog.dismiss();*/
+			hideBusy();
     		if (result.first.equals("OK"))
     		{
     			showMsg("posted");
+    			setResult(RESULT_OK);
     			finish();
     		} else {
     			showMsg("Error: " + result.first + ": " + result.second);
     		}
     	}	
 	}
+	
+    void showBusy(String title, String msg) {
+    	if (busyDialog != null)
+    		busyDialog.dismiss();
+    	
+		busyDialog = ProgressDialog.show(this, title, msg);
+    }
+    
+    void updateBusy(String msg) {
+		if (busyDialog != null)
+			busyDialog.setMessage(msg);
+    }
+    
+    void hideBusy() {
+		if (busyDialog != null) {
+			busyDialog.dismiss();
+			busyDialog = null;
+		}
+    }
+    
+    @Override
+    public void onDestroy()
+    {
+    	super.onDestroy();
+    	busyDialog = null;
+    }
 	
 	void showMsg(String msg) {
 		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
