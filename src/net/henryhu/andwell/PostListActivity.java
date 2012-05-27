@@ -329,7 +329,63 @@ public class PostListActivity extends ListActivity {
     }
     
     public void doReply(long id, boolean rmode) {
-    	
+    	RequestArgs args = new RequestArgs(pref.getString("token", ""));
+    	args.add("id", postslist.get((int) id).id());
+    	args.add("xid", postslist.get((int) id).xid());
+    	args.add("board", pref.getString("board", ""));
+    	if (rmode)
+    		args.add("mode", "R");
+    	else
+    		args.add("mode", "S");
+    	new QuotePostTask().execute(args);
+    }
+    
+    private class QuotePostTask extends AsyncTask<RequestArgs, String, Pair<String, Object>> {
+    	RequestArgs args;
+		@Override
+		protected Pair<String, Object> doInBackground(RequestArgs... arg0) {
+			args = arg0[0];
+			try {
+    			HttpResponse resp = Utils.doGet(basePath, "/post/quote", args.getValue());
+    			Pair<String, String> ret = Utils.parseResult(resp);
+    			if (ret.first.equals("OK")) {
+    				String res = Utils.readResp(resp);
+    				JSONObject obj = new JSONObject(res);
+   					return new Pair<String, Object>("OK", obj);
+    			}
+    			return new Pair<String, Object>(ret.first, ret.second);
+    		}
+    		catch (IOException e)
+    		{
+    			return new Pair<String, Object>("IOException " + e.getMessage(), "");
+    		} catch (JSONException e) {
+    			return new Pair<String, Object>("JSON parse error: ", e.getMessage());
+			}
+		}
+		protected void onPostExecute(Pair<String, Object> result)
+    	{
+    		if (result.first.equals("OK"))
+    		{
+    	    	try {
+    	    		JSONObject obj = (JSONObject)result.second;
+    	    		Intent intent = new Intent(getApplicationContext(), NewPostActivity.class);
+    	    		intent.putExtra("board", pref.getString("board", "test"));
+    	    		intent.putExtra("re_id", args.getInt("id"));
+    	    		intent.putExtra("re_xid", args.getInt("xid"));
+    	    		intent.putExtra("title", obj.getString("title"));
+    	    		intent.putExtra("content", obj.getString("content"));
+    	    		startActivity(intent);
+    	    	} catch (JSONException e) {
+    	    		showMsg("illegal reply from server");
+    	    	}    			
+    		} else {
+   				showMsg(result.first + ": " + result.second.toString());
+    		}
+    	}
+    }
+    
+    void showMsg(String msg) {
+    	Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private class updatePostItemTask extends AsyncTask<Integer, Integer, Pair<String, Object>> {
@@ -431,6 +487,7 @@ public class PostListActivity extends ListActivity {
     	String _title;
     	String _author;
     	int _id;
+    	int _xid;
     	boolean _read;
     	public String toString()
     	{
@@ -450,6 +507,11 @@ public class PostListActivity extends ListActivity {
     		return _id;
     	}
     	
+    	public int xid()
+    	{
+    		return _xid;
+    	}
+    	
     	public void setRead(boolean read)
     	{
     		_read = read;
@@ -461,6 +523,7 @@ public class PostListActivity extends ListActivity {
     		_title = post.getString("title");
 			_author = post.getString("owner");
 			_read = post.getBoolean("read");
+			_xid = post.getInt("xid");
     	}
     	
     	PostItem(int id)

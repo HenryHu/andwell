@@ -133,20 +133,10 @@ public class PostViewActivity extends Activity {
     			int respCode = resp.getStatusLine().getStatusCode();
     			if (respCode == 200)
     			{
-    				BufferedReader br = new BufferedReader(
-    						new InputStreamReader(resp.getEntity().getContent()));
-    				StringBuilder sb = new StringBuilder(1024);
-    				char[] buf = new char[1024];
-    				int nread = 0;
-    				while ((nread = br.read(buf)) != -1)
-    				{
-    					sb.append(buf, 0, nread);
-    				}
-    				br.close();
-    				
     				JSONObject obj = null;
     				try {
-    					obj = new JSONObject(sb.toString());
+    					obj = new JSONObject(Utils.readResp(resp));
+
     					String content = obj.getString("content");
     					return new Pair<String, String>("OK", content);
     				} catch (JSONException e)

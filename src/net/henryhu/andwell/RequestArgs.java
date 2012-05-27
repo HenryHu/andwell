@@ -27,6 +27,15 @@ public class RequestArgs {
 		add(item, String.valueOf(val));
 	}
 	
+	public int getInt(String item) {
+		for (NameValuePair pair : value) {
+			if (pair.getName().equals(item)) {
+				return Integer.parseInt(pair.getValue());
+			}
+		}
+		return 0;
+	}
+	
 	public List<NameValuePair> getValue()
 	{
 		return value;
