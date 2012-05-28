@@ -89,8 +89,7 @@ public class BoardsActivity extends ListActivity {
     			HttpResponse resp = Utils.doGet(basePath, "/board/list", args.getValue());
     			if (resp.getStatusLine().getStatusCode() == 200)
     			{
-    				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-    				String ret = br.readLine();
+    				String ret = Utils.readResp(resp);
     				JSONArray obj = null;
     				try {
     					obj = new JSONArray(ret);
@@ -152,8 +151,7 @@ public class BoardsActivity extends ListActivity {
     			HttpResponse resp = Utils.doGet(basePath, "/favboard/list", args.getValue());
     			if (resp.getStatusLine().getStatusCode() == 200)
     			{
-    				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-    				String ret = br.readLine();
+    				String ret = Utils.readResp(resp);
     				JSONArray obj = null;
     				try {
     					obj = new JSONArray(ret);

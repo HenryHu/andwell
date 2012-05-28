@@ -31,6 +31,7 @@ import android.util.Pair;
 
 public class Utils {
 	public static final String PREFS_FILE = "MainPref";
+	static HttpClient client = null;
 
 	public static String getOAuthRedirectURI(String basePath)
 	{
@@ -68,9 +69,11 @@ public class Utils {
 		
 		Log.d("get path", basePath + path + "?" + args);
 		
-		HttpClient hc = Utils.getNewHttpClient();
+		if (client == null) {
+			client = getNewHttpClient();
+		}
 		HttpResponse resp = null;
-		resp = hc.execute(get);
+		resp = client.execute(get);
 		return resp;
 	}
 
@@ -85,9 +88,12 @@ public class Utils {
 		catch (UnsupportedEncodingException e)	{ }
 		ent.setContentType(URLEncodedUtils.CONTENT_TYPE);
 		post.setEntity(ent);
-		HttpClient hc = Utils.getNewHttpClient();
+		if (client == null) {
+			client = getNewHttpClient();
+		}
+
 		HttpResponse resp = null;
-		resp = hc.execute(post);
+		resp = client.execute(post);
 		return resp;
 	}
 	
