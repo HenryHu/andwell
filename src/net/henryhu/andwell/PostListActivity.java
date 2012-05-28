@@ -48,6 +48,7 @@ public class PostListActivity extends ListActivity {
 	static final int INPUT_DIALOG_ID = 0;
 	public static final int ACTION_POST = 1;
 	public static final int ACTION_REPLY = 2;
+	public static final int ACTION_VIEW = 3;
 	Dialog inputDialog = null;
 	EditText tValue = null;
 	String basePath;
@@ -86,23 +87,19 @@ public class PostListActivity extends ListActivity {
             	{
             		new LoadPostsTask().execute(postslist.get(1).id() + 1, 20, 0, 0);
             	} else {
-            		Editor edit = pref.edit();
-            		edit.putInt("post_id", item.id());
-            		edit.commit();
             		Intent intent = new Intent(myAct, PostViewActivity.class);
             		intent.putExtra("id", item.id());
             		intent.putExtra("xid", item.xid());
             		intent.putExtra("board", pref.getString("board", ""));
-            		startActivity(intent);
             		postslist.get(position).setRead(true);
             		adapter.notifyDataSetChanged();
+            		startActivityForResult(intent, ACTION_VIEW);
             	}
             }
           });
         
         registerForContextMenu(getListView());
-        if (!pref.contains("post_id"))
-        	loadPosts(0, 20, 0, 0);
+       	loadPosts(0, 20, 0, 0);
     }
     
     protected Dialog onCreateDialog(int id) {
@@ -484,6 +481,25 @@ public class PostListActivity extends ListActivity {
     		if (resultCode == RESULT_OK) {
                 loadPosts(0, 20, 0, 0);
     		}
+    	} else if (requestCode == ACTION_VIEW) {
+    		int post_id = data.getExtras().getInt("id");
+    		if (postslist.get(1).id() < post_id 
+    				|| postslist.get(postslist.size() - 2).id() > post_id) {
+            	int startid = post_id - 10;
+            	if (startid < 1)
+            		startid = 1;
+
+        		loadPosts(startid, 20, 0, post_id);
+        	} else {
+        		for (int i=0; i<postslist.size(); i++)
+				{
+					if (postslist.get(i).id() == post_id)
+					{
+						getListView().setSelection(i);
+						break;
+					}
+				}
+        	}
     	}
     }
     
@@ -492,7 +508,6 @@ public class PostListActivity extends ListActivity {
     {
     	super.onDestroy();
     	busyDialog = null;
-    	pref.edit().remove("post_id");
     }
     
     @Override
@@ -505,15 +520,6 @@ public class PostListActivity extends ListActivity {
     public void onStart()
     {
     	super.onStart();
-    	if (pref.contains("post_id"))
-    	{
-    		int postid = pref.getInt("post_id", 0);
-        	int startid = postid - 10;
-        	if (startid < 1)
-        		startid = 1;
-
-    		loadPosts(startid, 20, 0, postid);
-    	}
     }
     
     class PostItem {

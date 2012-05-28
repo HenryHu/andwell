@@ -1,8 +1,6 @@
 package net.henryhu.andwell;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +8,6 @@ import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import net.henryhu.andwell.R;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -23,10 +20,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class BoardsActivity extends ListActivity {
 	private Activity myAct = null;
@@ -55,7 +52,6 @@ public class BoardsActivity extends ListActivity {
             	BoardItem item = boardslist.get(position);
             	Editor edit = pref.edit();
             	edit.putString("board", item.id());
-            	edit.remove("post_id");
             	edit.commit();
             	Intent intent = new Intent(myAct, PostListActivity.class);
             	startActivity(intent);

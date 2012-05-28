@@ -1,13 +1,10 @@
 package net.henryhu.andwell;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
-import net.henryhu.andwell.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -25,12 +22,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class PostViewActivity extends Activity {
-	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	TextView tContent = null;
 	TextView tQMD = null;
@@ -38,11 +33,11 @@ public class PostViewActivity extends Activity {
 	float target_prop;
 	String basePath;
 	ProgressDialog busyDialog = null;
+	int post_id, post_xid;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        myAct = this;
         pref = getSharedPreferences(Utils.PREFS_FILE, MODE_PRIVATE);
         setContentView(R.layout.postview);
         tContent = (TextView)findViewById(R.id.tContent);
@@ -66,18 +61,17 @@ public class PostViewActivity extends Activity {
         float chn_width = tp.measureText("一");
         target_prop = 2 / (chn_width / space_width);
         Log.d("target_prop: ", String.valueOf(target_prop));
-
-        updateTitle();
-        
-
 /*        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/WenQuanYiZenHeiMono.ttf");
         tQMD.setTypeface(tf);*/
-        LoadPost(pref.getInt("post_id", 0));
+        post_id = getIntent().getExtras().getInt("id");
+        post_xid = getIntent().getExtras().getInt("xid");
+        updateTitle();
+        LoadPost(post_id);
     }
     
     public void updateTitle()
     {
-    	setTitle(pref.getString("board", "") + " - " + pref.getInt("post_id", 0));
+    	setTitle(pref.getString("board", "") + " - " + post_id);
     }
     
     class ThreadClickListener implements OnClickListener {
@@ -106,15 +100,15 @@ public class PostViewActivity extends Activity {
 				delta = -1;
 			else
 				delta = 1;
-			int post_id = pref.getInt("post_id", 0) + delta;
-			if (post_id <= 1)
+			int new_post_id = post_id + delta;
+			if (new_post_id <= 1)
 			{
 				Toast toast = Toast.makeText(getApplicationContext(), 
 						"You are at the start of the history", Toast.LENGTH_SHORT);
 				toast.show();
 			}
 			else
-				LoadPost(post_id);
+				LoadPost(new_post_id);
 		}
     };
 
@@ -124,12 +118,12 @@ public class PostViewActivity extends Activity {
     }
 
     private class LoadPostTask extends AsyncTask<Integer, Integer, Pair<String, String>> {
-    	int post_id;
+    	int new_post_id, new_post_xid;
     	protected Pair<String, String> doInBackground(Integer... arg)
     	{
     		RequestArgs args = new RequestArgs(pref.getString("token", ""));
-    		post_id = arg[0];
-    		args.add("id", String.valueOf(post_id));
+    		new_post_id = arg[0];
+    		args.add("id", String.valueOf(new_post_id));
     		args.add("board", pref.getString("board", "test"));
     		
     		try {
@@ -142,6 +136,7 @@ public class PostViewActivity extends Activity {
     					obj = new JSONObject(Utils.readResp(resp));
 
     					String content = obj.getString("content");
+    					new_post_xid = obj.getInt("xid"); 
     					return new Pair<String, String>("OK", content);
     				} catch (JSONException e)
     				{
@@ -176,7 +171,8 @@ public class PostViewActivity extends Activity {
     		checkError(result.first);
     		if (result.first.equals("OK"))
     		{
-    			pref.edit().putInt("post_id", post_id).commit();
+    			post_id = new_post_id;
+    			post_xid = new_post_xid;
     			updateTitle();
     			SpannableStringBuilder content = new SpannableStringBuilder();
     			SpannableStringBuilder qmd = new SpannableStringBuilder();
@@ -184,6 +180,14 @@ public class PostViewActivity extends Activity {
     			tContent.setText(content);
     			tQMD.setText(qmd);
     		}
+    		Intent data = new Intent(getApplicationContext(), PostViewActivity.class);
+    	    Bundle extras = new Bundle();
+    	    extras.putInt("id", post_id);
+    	    extras.putInt("xid", post_xid);
+    	    
+    	    data.putExtras(extras);
+
+    		setResult(RESULT_OK, data);
     	}
     }
     
@@ -192,7 +196,7 @@ public class PostViewActivity extends Activity {
     	protected Pair<String, Integer> doInBackground(Boolean... arg)
     	{
     		RequestArgs args = new RequestArgs(pref.getString("token", ""));
-    		args.add("id", String.valueOf(pref.getInt("post_id", 0)));
+    		args.add("id", post_id);
     		args.add("board", pref.getString("board", "test"));
     		forward = arg[0];
     		if (!forward)
@@ -323,8 +327,8 @@ public class PostViewActivity extends Activity {
     
     public void doReply(String mode) {
     	RequestArgs args = new RequestArgs(pref.getString("token", ""));
-    	args.add("id", getIntent().getExtras().getInt("id"));
-    	args.add("xid", getIntent().getExtras().getInt("xid"));
+    	args.add("id", post_id);
+    	args.add("xid", post_xid);
     	args.add("board", getIntent().getExtras().getString("board"));
     	args.add("mode", mode);
     	new QuotePostTask().execute(args);
@@ -411,5 +415,4 @@ public class PostViewActivity extends Activity {
     	super.onDestroy();
     	busyDialog = null;
     }
-    
 }
