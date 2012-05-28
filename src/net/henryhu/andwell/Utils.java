@@ -23,6 +23,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.util.Log;
@@ -30,6 +31,9 @@ import android.util.Pair;
 
 public class Utils {
 	public static final String PREFS_FILE = "MainPref";
+	public static final int soTimeoutMs = 10000;
+	public static final int connTimeoutMs = 20000;
+	
 	static HttpClient client = null;
 
 	public static String getOAuthRedirectURI(String basePath)
@@ -38,6 +42,7 @@ public class Utils {
 	}
 
 	public static HttpClient getNewHttpClient() {
+		HttpClient result = null;
 	    try {
 	        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 	        trustStore.load(null, null);
@@ -53,10 +58,14 @@ public class Utils {
 
 	        ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
 
-	        return new DefaultHttpClient(ccm, params);
+	        result = new DefaultHttpClient(ccm, params);
 	    } catch (Exception e) {
-	        return new DefaultHttpClient();
+	        result = new DefaultHttpClient();
 	    }
+	    HttpParams params = result.getParams();
+	    HttpConnectionParams.setConnectionTimeout(params, connTimeoutMs);
+	    HttpConnectionParams.setSoTimeout(params, soTimeoutMs);
+	    return result;
 	}
 
 	public static HttpResponse doGet(String basePath, String path, List<NameValuePair> params)

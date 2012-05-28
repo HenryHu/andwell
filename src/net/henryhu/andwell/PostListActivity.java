@@ -259,6 +259,7 @@ public class PostListActivity extends ListActivity {
     				JSONArray obj = null;
     				try {
     					obj = new JSONArray(sb.toString());
+    					int cnt = 0;
     					for (int i=obj.length() - 1; i>=0; i--)
     					{
     						JSONObject post = obj.getJSONObject(i);
@@ -267,7 +268,8 @@ public class PostListActivity extends ListActivity {
     							postslist.add(item);
     						else
     							postslist.add(obj.length() - i, item);
-    						publishProgress(postslist.size());
+    						cnt++;
+    						publishProgress(cnt);
     					}
     					if (insertpos == -1)
     						postslist.add(new PostItem(PostItem.ID_MORE));
