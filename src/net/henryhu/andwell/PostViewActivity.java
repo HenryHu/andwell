@@ -405,4 +405,11 @@ public class PostViewActivity extends Activity {
 		}
     }
     
+    @Override
+    public void onDestroy()
+    {
+    	super.onDestroy();
+    	busyDialog = null;
+    }
+    
 }
