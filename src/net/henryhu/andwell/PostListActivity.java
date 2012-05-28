@@ -43,7 +43,7 @@ public class PostListActivity extends ListActivity {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	List<PostItem> postslist = new ArrayList<PostItem>();
-	ProgressDialog busyDialog;
+	ProgressDialog busyDialog = null;
 	ArrayAdapter<PostItem> adapter;
 	static final int INPUT_DIALOG_ID = 0;
 	public static final int ACTION_POST = 1;
@@ -90,6 +90,9 @@ public class PostListActivity extends ListActivity {
             		edit.putInt("post_id", item.id());
             		edit.commit();
             		Intent intent = new Intent(myAct, PostViewActivity.class);
+            		intent.putExtra("id", item.id());
+            		intent.putExtra("xid", item.xid());
+            		intent.putExtra("board", pref.getString("board", ""));
             		startActivity(intent);
             		postslist.get(position).setRead(true);
             		adapter.notifyDataSetChanged();
@@ -377,7 +380,9 @@ public class PostListActivity extends ListActivity {
     	    		intent.putExtra("re_id", args.getInt("id"));
     	    		intent.putExtra("re_xid", args.getInt("xid"));
     	    		intent.putExtra("title", obj.getString("title"));
-    	    		intent.putExtra("content", obj.getString("content"));
+    	    		intent.putExtra("content", 
+    	    			((args.getString("mode").equals("R") ? "" : 
+    	    				"\nSent from AndWell\n") + obj.getString("content")));
     	    		startActivityForResult(intent, ACTION_REPLY);
     	    	} catch (JSONException e) {
     	    		showMsg("illegal reply from server");

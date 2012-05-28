@@ -51,6 +51,8 @@ public class NewPostActivity extends Activity {
         String content = getIntent().getExtras().getString("content");
         if (content != null)
         	content_in.setText(content);
+        else
+        	content_in.setText("\nSent from AndWell");
         qmd_in.setText(pref.getString("qmd_id", ""));
         
         post_btn.setOnClickListener(new OnClickListener() {

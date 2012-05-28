@@ -28,12 +28,16 @@ public class RequestArgs {
 	}
 	
 	public int getInt(String item) {
+		return Integer.parseInt(getString(item));
+	}
+	
+	public String getString(String item) {
 		for (NameValuePair pair : value) {
 			if (pair.getName().equals(item)) {
-				return Integer.parseInt(pair.getValue());
+				return pair.getValue();
 			}
 		}
-		return 0;
+		return "";
 	}
 	
 	public List<NameValuePair> getValue()

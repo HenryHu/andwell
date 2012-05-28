@@ -27,4 +27,7 @@
     <string name="postlist_contextmenu_reply">Reply</string>
     <string name="postlist_contextmenu_rreply">R Mode Reply</string>
     <string name="postlist_contextmenu_rreply_short">R Reply</string>
+    <string name="postview_menu_reply">Reply</string>
+    <string name="postview_menu_RReply">R Mode Reply</string>
+    <string name="postview_menu_rreply_short">R Reply</string>
 </resources>

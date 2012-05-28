@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/mReply_PostView" android:titleCondensed="@string/postview_menu_reply" android:title="@string/postview_menu_reply" android:icon="@drawable/ic_menu_dialog"></item>
+    <item android:id="@+id/mRReply_PostView" android:titleCondensed="@string/postview_menu_rreply_short" android:title="@string/postview_menu_RReply" android:icon="@drawable/ic_menu_agenda"></item>
+    
+
+</menu>
