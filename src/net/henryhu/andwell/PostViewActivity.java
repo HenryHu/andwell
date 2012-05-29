@@ -78,15 +78,21 @@ public class PostViewActivity extends Activity {
     }
     
     class ThreadClickListener implements OnClickListener {
-    	private boolean _forward;
-    	ThreadClickListener(boolean forward)
+    	private boolean _forward, _last_one, _only_new;
+    	ThreadClickListener(boolean forward) {
+    		this(forward, false, false);
+    	}
+
+    	ThreadClickListener(boolean forward, boolean last_one, boolean only_new)
     	{
     		_forward = forward;
+    		_last_one = last_one;
+    		_only_new = only_new;
     	}
     	
     	@Override
 		public void onClick(View arg0) {
-    		new LoadNextPostTask().execute(_forward);
+    		new LoadNextPostTask().execute(_forward, _last_one, _only_new);
     	}
     }
 
@@ -198,15 +204,21 @@ public class PostViewActivity extends Activity {
     }
     
     private class LoadNextPostTask extends AsyncTask<Boolean, Integer, Pair<String, Integer>> {
-    	boolean forward;
+    	boolean forward, last_one, only_new;
     	protected Pair<String, Integer> doInBackground(Boolean... arg)
     	{
     		RequestArgs args = new RequestArgs(pref.getString("token", ""));
     		args.add("id", post_id);
     		args.add("board", pref.getString("board", "test"));
     		forward = arg[0];
+    		last_one = arg[1];
+    		only_new = arg[2];
     		if (!forward)
     			args.add("direction", "backward");
+    		if (last_one)
+    			args.add("last_one", 1);
+    		if (only_new)
+    			args.add("only_new", 1);
     		
     		try {
     			HttpResponse resp = Utils.doGet(basePath, "/post/nextid", args.getValue());
@@ -255,8 +267,15 @@ public class PostViewActivity extends Activity {
     		hideBusy();
     		if (result.first.equals("NO MORE"))
     		{
+    			if (only_new && !forward) {
+    				// maybe forward would be ok...
+    				new LoadNextPostTask().execute(true, last_one, only_new);
+    				return;
+    			}
     			String msg;
-    			if (forward)
+    			if (only_new)
+    				msg = "No new post";
+    			else if (forward)
     				msg = "You are at the tail of the thread";
     			else
     				msg = "You are at the head of the thread";
@@ -326,6 +345,13 @@ public class PostViewActivity extends Activity {
         	return true;
         case R.id.mRReply_PostView:
         	doReply("R");
+        	return true;
+        case R.id.mThreadFirst_PostView:
+        	new LoadNextPostTask().execute(false, true, false);
+        	return true;
+        case R.id.mThreadFirstNew_PostView:
+        	new LoadNextPostTask().execute(false, true, true);
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
         }

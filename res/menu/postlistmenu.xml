@@ -2,6 +2,6 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:titleCondensed="@string/refresh_all" android:title="@string/refresh_all" android:id="@+id/mRefreshAll_PostList" android:icon="@drawable/ic_menu_refresh"></item>
-    <item android:title="@string/jumpto" android:titleCondensed="@string/jumpto" android:id="@+id/mJumpTo_PostList" android:icon="@drawable/ic_btn_search_go"></item>
+    <item android:title="@string/jumpto" android:titleCondensed="@string/jumpto" android:id="@+id/mJumpTo_PostList" android:icon="@drawable/ic_menu_goto"></item>
     <item android:id="@+id/mPostNew_PostList" android:title="@string/new_postlist" android:titleCondensed="@string/new_postlist_short" android:icon="@drawable/ic_menu_compose"></item>
 </menu>

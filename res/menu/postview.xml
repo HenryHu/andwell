@@ -2,6 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/mReply_PostView" android:titleCondensed="@string/postview_menu_reply" android:title="@string/postview_menu_reply" android:icon="@drawable/ic_menu_dialog"></item>
     <item android:id="@+id/mRReply_PostView" android:titleCondensed="@string/postview_menu_rreply_short" android:title="@string/postview_menu_RReply" android:icon="@drawable/ic_menu_agenda"></item>
+    <item android:id="@+id/mThreadFirst_PostView" android:titleCondensed="@string/postview_menu_threadfirst_short" android:title="@string/postview_menu_threadfirst" android:icon="@drawable/ic_menu_directions"></item>
+    <item android:id="@+id/mThreadFirstNew_PostView" android:titleCondensed="@string/postview_menu_threadfirstnew" android:title="@string/postview_menu_threadfirstnew" android:icon="@drawable/ic_menu_add"></item>
     
 
 </menu>
