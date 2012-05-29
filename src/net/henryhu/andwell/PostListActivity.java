@@ -493,6 +493,18 @@ public class PostListActivity extends ListActivity {
 
         		loadPosts(startid, 20, 0, post_id);
         	} else {
+        		ArrayList<Integer> post_viewed = data.getExtras().getIntegerArrayList("post_viewed");
+        		if (post_viewed != null) {
+        			for (int v_xid : post_viewed) {
+        				for (int i=0; i<postslist.size(); i++) {
+        					if (postslist.get(i).xid() == v_xid) {
+        						postslist.get(i).setRead(true);
+        						break;
+        					}
+        				}
+        			}
+        			adapter.notifyDataSetChanged();
+        		}
         		for (int i=0; i<postslist.size(); i++)
 				{
 					if (postslist.get(i).id() == post_id)
@@ -510,18 +522,6 @@ public class PostListActivity extends ListActivity {
     {
     	super.onDestroy();
     	busyDialog = null;
-    }
-    
-    @Override
-    public void onResume()
-    {
-    	super.onResume();
-    }
-    
-    @Override
-    public void onStart()
-    {
-    	super.onStart();
     }
     
     class PostItem {

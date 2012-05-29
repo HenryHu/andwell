@@ -1,6 +1,7 @@
 package net.henryhu.andwell;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
 import org.json.JSONException;
@@ -34,6 +35,7 @@ public class PostViewActivity extends Activity {
 	String basePath;
 	ProgressDialog busyDialog = null;
 	int post_id, post_xid;
+	ArrayList<Integer> post_viewed;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,7 @@ public class PostViewActivity extends Activity {
         tQMD.setTypeface(tf);*/
         post_id = getIntent().getExtras().getInt("id");
         post_xid = getIntent().getExtras().getInt("xid");
+        post_viewed = new ArrayList<Integer>();
         updateTitle();
         LoadPost(post_id);
     }
@@ -173,6 +176,7 @@ public class PostViewActivity extends Activity {
     		{
     			post_id = new_post_id;
     			post_xid = new_post_xid;
+    			post_viewed.add(post_xid);
     			updateTitle();
     			SpannableStringBuilder content = new SpannableStringBuilder();
     			SpannableStringBuilder qmd = new SpannableStringBuilder();
@@ -180,10 +184,12 @@ public class PostViewActivity extends Activity {
     			tContent.setText(content);
     			tQMD.setText(qmd);
     		}
+    		
     		Intent data = new Intent(getApplicationContext(), PostViewActivity.class);
     	    Bundle extras = new Bundle();
     	    extras.putInt("id", post_id);
     	    extras.putInt("xid", post_xid);
+    	    extras.putIntegerArrayList("post_viewed", post_viewed);
     	    
     	    data.putExtras(extras);
 
