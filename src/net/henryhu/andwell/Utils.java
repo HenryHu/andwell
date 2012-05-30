@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -51,6 +52,8 @@ public class Utils {
 	        sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
 	        HttpParams params = new BasicHttpParams();
+		    HttpConnectionParams.setConnectionTimeout(params, connTimeoutMs);
+		    HttpConnectionParams.setSoTimeout(params, soTimeoutMs);
 
 	        SchemeRegistry registry = new SchemeRegistry();
 	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -62,9 +65,6 @@ public class Utils {
 	    } catch (Exception e) {
 	        result = new DefaultHttpClient();
 	    }
-	    HttpParams params = result.getParams();
-	    HttpConnectionParams.setConnectionTimeout(params, connTimeoutMs);
-	    HttpConnectionParams.setSoTimeout(params, soTimeoutMs);
 	    return result;
 	}
 
@@ -115,16 +115,21 @@ public class Utils {
 	
 	public static String readAll(InputStream is) throws IOException
 	{
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		StringBuilder sb = new StringBuilder(1024);
-		char[] buf = new char[1024];
-		int nread = 0;
-		while ((nread = br.read(buf)) != -1)
-		{
-			sb.append(buf, 0, nread);
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			StringBuilder sb = new StringBuilder(1024);
+			char[] buf = new char[1024];
+			int nread = 0;
+			while ((nread = br.read(buf)) != -1)
+			{
+				sb.append(buf, 0, nread);
+			}
+			br.close();
+			Log.d("ReadAll", "ret: " + sb.toString());
+			return sb.toString();
+		} finally {
+			is.close();
 		}
-		br.close();
-		return sb.toString();
 	}
 	
 	public static Pair<String, String> parseResult(HttpResponse resp) {
@@ -133,10 +138,20 @@ public class Utils {
 		{
 			return new Pair<String, String>("OK", "");
 		} else {
+			HttpEntity ent = resp.getEntity();
+			if (ent != null) {
+				try {
+					ent.getContent().close();
+				} catch (IllegalStateException e) {
+				} catch (IOException e) {
+				}
+			}
+			if (respCode == 404)
+				return new Pair<String, String>("NO MORE", resp.getStatusLine().getReasonPhrase());
 			if (respCode == 416)
-				return new Pair<String, String>("OUT OF RANGE", "");
+				return new Pair<String, String>("OUT OF RANGE", resp.getStatusLine().getReasonPhrase());
 			else
-				return new Pair<String, String>(resp.getStatusLine().getReasonPhrase(), "");
+				return new Pair<String, String>(resp.getStatusLine().getReasonPhrase(), resp.getStatusLine().getReasonPhrase());
 		}
 	}
 	

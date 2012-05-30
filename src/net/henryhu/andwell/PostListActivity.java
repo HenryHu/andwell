@@ -85,7 +85,10 @@ public class PostListActivity extends ListActivity {
             		}
             	} else if (item.id() == PostItem.ID_UPDATE)
             	{
-            		new LoadPostsTask().execute(postslist.get(1).id() + 1, 20, 0, 0);
+            		if (postslist.size() >= 3)
+            			new LoadPostsTask().execute(postslist.get(1).id() + 1, 20, 0, 0);
+            		else
+            			loadPosts(0, 20, 0, 0);
             	} else {
             		Intent intent = new Intent(myAct, PostViewActivity.class);
             		intent.putExtra("id", item.id());
@@ -245,21 +248,14 @@ public class PostListActivity extends ListActivity {
     		
     		try {
     			HttpResponse resp = Utils.doGet(basePath, "/board/post_list", args.getValue());
-    			if (resp.getStatusLine().getStatusCode() == 200)
+    			Pair<String, String> result = Utils.parseResult(resp);
+    			if (result.first.equals("OK"))
     			{
-    				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-    				StringBuilder sb = new StringBuilder(1024);
-    				char[] buf = new char[1024];
-    				int nread = 0;
-    				while ((nread = br.read(buf)) != -1)
-    				{
-    					sb.append(buf, 0, nread);
-    				}
-    				br.close();
+    				String ret = Utils.readResp(resp);
     				
     				JSONArray obj = null;
     				try {
-    					obj = new JSONArray(sb.toString());
+    					obj = new JSONArray(ret);
     					int cnt = 0;
     					for (int i=obj.length() - 1; i>=0; i--)
     					{
@@ -280,7 +276,7 @@ public class PostListActivity extends ListActivity {
     					return "JSON parse error: " + e.getMessage();
     				}
     			} else {
-    				return resp.getStatusLine().getReasonPhrase();
+    				return result.first;
     			}
     		}
     		catch (IOException e)
@@ -302,9 +298,9 @@ public class PostListActivity extends ListActivity {
     	protected void onPostExecute(String result)
     	{
     		hideBusy();
+			adapter.notifyDataSetChanged();
     		if (result.equals("OK"))
     		{
-    			adapter.notifyDataSetChanged();
     			if (selectid != 0)
     			{
     				for (int i=0; i<postslist.size(); i++)
@@ -317,12 +313,13 @@ public class PostListActivity extends ListActivity {
     				}
     			}
     		} else {
-    			if (errMsg.equals(""))
+    			if (errMsg.equals("")) {
+       				loaded = false;
     				errMsg = "failed to load posts: " + result;
+    			}
    				Toast toast = Toast.makeText(getApplicationContext(), 
    					errMsg, Toast.LENGTH_SHORT);
    				toast.show();
-   				loaded = false;
     		}
     	}
     }
@@ -357,13 +354,13 @@ public class PostListActivity extends ListActivity {
     				JSONObject obj = new JSONObject(res);
    					return new Pair<String, Object>("OK", obj);
     			}
-    			return new Pair<String, Object>(ret.first, ret.second);
+    			return new Pair<String, Object>("Error", ret.second);
     		}
     		catch (IOException e)
     		{
-    			return new Pair<String, Object>("IOException " + e.getMessage(), "");
+    			return new Pair<String, Object>("IOException" + e.getMessage(), "");
     		} catch (JSONException e) {
-    			return new Pair<String, Object>("JSON parse error: ", e.getMessage());
+    			return new Pair<String, Object>("JSON parse error", e.getMessage());
 			}
 		}
 		protected void onPreExecute() {
@@ -413,21 +410,14 @@ public class PostListActivity extends ListActivity {
     		
     		try {
     			HttpResponse resp = Utils.doGet(basePath, "/board/post_list", args.getValue());
-    			if (resp.getStatusLine().getStatusCode() == 200)
+    			Pair<String, String> result = Utils.parseResult(resp);
+    			if (result.first.equals("OK"))
     			{
-    				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-    				StringBuilder sb = new StringBuilder(1024);
-    				char[] buf = new char[1024];
-    				int nread = 0;
-    				while ((nread = br.read(buf)) != -1)
-    				{
-    					sb.append(buf, 0, nread);
-    				}
-    				br.close();
+    				String ret = Utils.readResp(resp);
     				
     				JSONArray obj = null;
     				try {
-    					obj = new JSONArray(sb.toString());
+    					obj = new JSONArray(ret);
     					JSONObject post = obj.getJSONObject(0);
 
     					return new Pair<String, Object>("OK", new PostItem(post));
@@ -436,7 +426,7 @@ public class PostListActivity extends ListActivity {
     					return new Pair<String, Object>("JSON parse error", e.getMessage());
     				}
     			} else {
-    				return new Pair<String, Object>("Request error", resp.getStatusLine().getReasonPhrase());
+    				return new Pair<String, Object>("Request error", result.second);
     			}
     		}
     		catch (IOException e)

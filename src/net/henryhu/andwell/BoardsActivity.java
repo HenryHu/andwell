@@ -18,6 +18,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -83,7 +84,8 @@ public class BoardsActivity extends ListActivity {
     		
     		try {
     			HttpResponse resp = Utils.doGet(basePath, "/board/list", args.getValue());
-    			if (resp.getStatusLine().getStatusCode() == 200)
+    			Pair<String, String> result = Utils.parseResult(resp);
+    			if (result.first.equals("OK"))
     			{
     				String ret = Utils.readResp(resp);
     				JSONArray obj = null;
@@ -101,7 +103,7 @@ public class BoardsActivity extends ListActivity {
     					return "JSON parse error: " + e.getMessage();
     				}
     			} else {
-    				return resp.getStatusLine().getReasonPhrase();
+    				return result.second;
     			}
     		}
     		catch (IOException e)
@@ -145,7 +147,8 @@ public class BoardsActivity extends ListActivity {
     		
     		try {
     			HttpResponse resp = Utils.doGet(basePath, "/favboard/list", args.getValue());
-    			if (resp.getStatusLine().getStatusCode() == 200)
+    			Pair<String, String> result = Utils.parseResult(resp);
+    			if (result.first.equals("OK"))
     			{
     				String ret = Utils.readResp(resp);
     				JSONArray obj = null;
@@ -177,7 +180,7 @@ public class BoardsActivity extends ListActivity {
     					return "JSON parse error: " + e.getMessage();
     				}
     			} else {
-    				return resp.getStatusLine().getReasonPhrase();
+    				return result.second;
     			}
     		}
     		catch (IOException e)

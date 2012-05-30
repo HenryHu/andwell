@@ -137,8 +137,8 @@ public class PostViewActivity extends Activity {
     		
     		try {
     			HttpResponse resp = Utils.doGet(basePath, "/post/view", args.getValue());
-    			int respCode = resp.getStatusLine().getStatusCode();
-    			if (respCode == 200)
+    			Pair<String, String> result = Utils.parseResult(resp);
+    			if (result.first.equals("OK"))
     			{
     				JSONObject obj = null;
     				try {
@@ -152,10 +152,7 @@ public class PostViewActivity extends Activity {
     					return new Pair<String, String>("JSON parse error: " + e.getMessage(), "");
     				}
     			} else {
-    				if (respCode == 416)
-    					return new Pair<String, String>("OUT OF RANGE", "");
-    				else
-    					return new Pair<String, String>(resp.getStatusLine().getReasonPhrase(), "");
+    				return result;
     			}
     		}
     		catch (IOException e)
@@ -225,11 +222,10 @@ public class PostViewActivity extends Activity {
     		
     		try {
     			HttpResponse resp = Utils.doGet(basePath, "/post/nextid", args.getValue());
-    			int retCode = resp.getStatusLine().getStatusCode();
-    			if (retCode == 200)
+    			Pair<String, String> result = Utils.parseResult(resp);
+    			if (result.first.equals("OK"))
     			{
-    				String reply = Utils.readAll(resp.getEntity().getContent());
-    				
+    				String reply = Utils.readResp(resp);
     				JSONObject obj = null;
     				try {
     					obj = new JSONObject(reply);
@@ -241,12 +237,7 @@ public class PostViewActivity extends Activity {
     					return new Pair<String, Integer>("JSON parse error: " + e.getMessage(), 0);
     				}
     			} else {
-    				if (retCode == 404)
-    					return new Pair<String, Integer>("NO MORE", 0);
-    				else if (retCode == 416)
-    					return new Pair<String, Integer>("OUT OF RANGE", 0);
-    				else
-    					return new Pair<String, Integer>(resp.getStatusLine().getReasonPhrase(), 0);
+   					return new Pair<String, Integer>(result.first, 0);
     			}
     		}
     		catch (IOException e)
@@ -415,7 +406,7 @@ public class PostViewActivity extends Activity {
     	    		showMsg("illegal reply from server");
     	    	}    			
     		} else {
-   				showMsg(result.first + ": " + result.second.toString());
+   				showMsg("Error: " + result.second.toString());
     		}
     	}
     }

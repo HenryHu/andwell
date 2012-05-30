@@ -140,6 +140,10 @@ public class NewPostActivity extends Activity {
 			try {
     			HttpResponse resp = Utils.doPost(basePath, "/post/new", args.getValue());
     			Pair<String, String> ret = Utils.parseResult(resp);
+    			if (ret.first.equals("OK")) {
+    				Utils.readResp(resp);
+    			}
+    					
     			return ret;
     		}
     		catch (IOException e)
@@ -161,7 +165,7 @@ public class NewPostActivity extends Activity {
     			setResult(RESULT_OK);
     			finish();
     		} else {
-    			showMsg("Error: " + result.first + ": " + result.second);
+    			showMsg("Error: " + result.second);
     		}
     	}	
 	}

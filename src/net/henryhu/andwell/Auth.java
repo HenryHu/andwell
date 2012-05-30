@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import android.os.Handler;
 import android.util.Base64;
+import android.util.Pair;
 
 public class Auth {
 	static Thread startThread(final Runnable runnable)
@@ -106,15 +107,15 @@ public class Auth {
 			handler.post(new IOExceptionRunnable(ctx, e));
 			return false;
 		}
-		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+		Pair<String, String> result = Utils.parseResult(resp);
+		if (!result.first.equals("OK"))
 		{
-			final String reason = resp.getStatusLine().getReasonPhrase();
+			final String reason = result.second;
 			handler.post(new AuthFailRunnable(ctx, reason));
 			return false;
 		} else {
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-				String ret = br.readLine();
+				String ret = Utils.readResp(resp);
 				JSONObject obj = null;
 				try {
 					obj = new JSONObject(ret);
