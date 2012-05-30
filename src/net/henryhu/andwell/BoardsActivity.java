@@ -50,7 +50,8 @@ public class BoardsActivity extends ListActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
               // When clicked, show a toast with the TextView text
-            	BoardItem item = boardslist.get(position);
+            	BoardItem item = (BoardItem)parent.getItemAtPosition(position);
+//            	BoardItem item = boardslist.get(position);
             	Editor edit = pref.edit();
             	edit.putString("board", item.id());
             	edit.commit();
