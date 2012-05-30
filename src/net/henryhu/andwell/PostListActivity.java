@@ -1,8 +1,6 @@
 package net.henryhu.andwell;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,11 +66,10 @@ public class PostListActivity extends ListActivity {
         lv.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
-              // When clicked, show a toast with the TextView text
-            	PostItem item = postslist.get(position);
+            	PostItem item = (PostItem)parent.getItemAtPosition(position);
             	if (item.id() == PostItem.ID_MORE)
             	{
-            		int end = postslist.get(position - 1).id() - 1;
+            		int end = postslist.get(postslist.size() - 2).id() - 1;
             		if (end == 0)
             		{
             			Toast toast = Toast.makeText(getApplicationContext(),
@@ -80,7 +77,7 @@ public class PostListActivity extends ListActivity {
             					Toast.LENGTH_SHORT);
             			toast.show();
             		} else {
-            			postslist.remove(position);
+            			postslist.remove(postslist.size() - 1);
                 		new LoadPostsTask().execute(0, 20, end);
             		}
             	} else if (item.id() == PostItem.ID_UPDATE)
@@ -94,7 +91,7 @@ public class PostListActivity extends ListActivity {
             		intent.putExtra("id", item.id());
             		intent.putExtra("xid", item.xid());
             		intent.putExtra("board", pref.getString("board", ""));
-            		postslist.get(position).setRead(true);
+            		item.setRead(true);
             		adapter.notifyDataSetChanged();
             		startActivityForResult(intent, ACTION_VIEW);
             	}
