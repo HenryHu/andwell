@@ -190,17 +190,20 @@ public class PostViewActivity extends Activity {
     			tContent.setText(content);
     			tQMD.setText(qmd);
     		}
-    		
-    		Intent data = new Intent(getApplicationContext(), PostViewActivity.class);
-    	    Bundle extras = new Bundle();
-    	    extras.putInt("id", post_id);
-    	    extras.putInt("xid", post_xid);
-    	    extras.putIntegerArrayList("post_viewed", post_viewed);
-    	    
-    	    data.putExtras(extras);
-
-    		setResult(RESULT_OK, data);
+    		updateResult();
     	}
+    }
+    
+    private void updateResult() {
+    	Intent data = new Intent(getApplicationContext(), PostViewActivity.class);
+    	Bundle extras = new Bundle();
+    	extras.putInt("id", post_id);
+    	extras.putInt("xid", post_xid);
+    	extras.putIntegerArrayList("post_viewed", post_viewed);
+
+    	data.putExtras(extras);
+
+    	setResult(RESULT_OK, data);
     }
     
     private class LoadNextPostTask extends AsyncTask<Boolean, Integer, Pair<String, Integer>> {

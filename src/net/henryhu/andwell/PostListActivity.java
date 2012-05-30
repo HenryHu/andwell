@@ -51,6 +51,7 @@ public class PostListActivity extends ListActivity {
 	Dialog inputDialog = null;
 	EditText tValue = null;
 	String basePath;
+	boolean loaded = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,7 +99,7 @@ public class PostListActivity extends ListActivity {
           });
         
         registerForContextMenu(getListView());
-       	loadPosts(0, 20, 0, 0);
+       	loaded = false;
     }
     
     protected Dialog onCreateDialog(int id) {
@@ -212,6 +213,7 @@ public class PostListActivity extends ListActivity {
     
     void loadPosts(int start, int count, int end, int selectid)
     {
+    	loaded = true;
     	postslist.clear();
         postslist.add(new PostItem(PostItem.ID_UPDATE));
     	new LoadPostsTask().execute(start, count, end, -1, selectid);
@@ -320,6 +322,7 @@ public class PostListActivity extends ListActivity {
    				Toast toast = Toast.makeText(getApplicationContext(), 
    					errMsg, Toast.LENGTH_SHORT);
    				toast.show();
+   				loaded = false;
     		}
     	}
     }
@@ -484,7 +487,7 @@ public class PostListActivity extends ListActivity {
     		}
     	} else if (requestCode == ACTION_VIEW) {
     		int post_id = data.getExtras().getInt("id");
-    		if (postslist.get(1).id() < post_id 
+    		if (!loaded || postslist.size() < 3 || postslist.get(1).id() < post_id 
     				|| postslist.get(postslist.size() - 2).id() > post_id) {
             	int startid = post_id - 10;
             	if (startid < 1)
@@ -513,6 +516,14 @@ public class PostListActivity extends ListActivity {
 					}
 				}
         	}
+    	}
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	if (!loaded) {
+    		loadPosts(0, 20, 0, 0);
     	}
     }
     
