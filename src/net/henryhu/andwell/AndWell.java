@@ -1,8 +1,6 @@
 package net.henryhu.andwell;
 
-import java.io.*;
-
-import net.henryhu.andwell.R;
+import java.io.IOException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,7 +12,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class AndWell extends Activity implements AuthHandler {
 //	private EditText tUsername = null;
@@ -60,7 +61,29 @@ public class AndWell extends Activity implements AuthHandler {
         loadSettings();
 /*        if (pref.getBoolean("auto_login", true))
         	doLogin();*/
+        if (getIntent().getData() != null) {
+        	Uri uri = getIntent().getData();
+        	try {
+        		String oauth_code = uri.getQueryParameter("code");
+        		if (oauth_code == null) {
+        			throw new Exception();
+        		}
+            	tOAuthCode.setText(oauth_code);
+            	onOAuthGotCode(tOAuthCode.getText().toString());
+        	} catch (Exception e) {
+        		try {
+        			String error = uri.getQueryParameter("error");
+        			showMsg("Login error: " + error);
+        		} catch (Exception ex) {
+        			showMsg("Login error!");
+        		}
+        	}
+        }
         TryRelogin();
+    }
+    
+    void showMsg(String msg) {
+    	Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
     
     @Override
@@ -170,9 +193,11 @@ public class AndWell extends Activity implements AuthHandler {
     	String url = basePath + "/auth/auth?response_type=code&client_id="
     	+ Defs.OAuthClientID + "&redirect_uri="
     	+ Utils.getOAuthRedirectURI(basePath);
+    	
     	Intent i = new Intent(Intent.ACTION_VIEW);
     	i.setData(Uri.parse(url));
     	startActivity(i);
+    	finish();
     }
     
     void authResult(boolean result)
@@ -185,7 +210,6 @@ public class AndWell extends Activity implements AuthHandler {
 			
 			startActivity(intent);
 			finish();
-			
 		}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
     }
     
@@ -228,7 +252,6 @@ public class AndWell extends Activity implements AuthHandler {
     	loginDialog = ProgressDialog.show(myAct, "Log In", "Logging in...");
     	Auth.doOAuth(code, handler, (AuthHandler)myAct, basePath);
     }
-
 }
 
 

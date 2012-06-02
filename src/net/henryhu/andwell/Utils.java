@@ -39,7 +39,8 @@ public class Utils {
 
 	public static String getOAuthRedirectURI(String basePath)
 	{
-		return basePath + "/auth/displaycode";
+		return "andwell://andwell/oauth_redirect";
+//		return basePath + "/auth/displaycode";
 	}
 
 	public static HttpClient getNewHttpClient() {
