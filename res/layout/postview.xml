@@ -5,9 +5,9 @@
   android:layout_height="match_parent" android:orientation="vertical">
     <ScrollView android:layout_height="match_parent" android:id="@+id/scrollView1" android:layout_weight="1" android:layout_width="match_parent">
         <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
-                <TextView android:id="@+id/tContent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:typeface="monospace"></TextView>
+                <net.henryhu.andwell.PatchedTextView android:id="@+id/tContent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:typeface="monospace"></net.henryhu.andwell.PatchedTextView>
                 <HorizontalScrollView android:id="@+id/horizontalScrollView1" android:layout_width="wrap_content" android:layout_height="wrap_content">
-                    <TextView android:layout_height="match_parent" android:id="@+id/tQMD" android:layout_width="match_parent" android:typeface="monospace" android:maxWidth="640dp"></TextView>
+                    <net.henryhu.andwell.PatchedTextView android:layout_height="match_parent" android:id="@+id/tQMD" android:layout_width="match_parent" android:typeface="monospace" android:maxWidth="640dp"></net.henryhu.andwell.PatchedTextView>
                 </HorizontalScrollView>
         </LinearLayout>
     </ScrollView>
