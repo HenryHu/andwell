@@ -162,7 +162,6 @@ public class AndWell extends Activity implements AuthHandler {
     
     private OnClickListener loginOAuthListener = new OnClickListener()
     {
-    	@Override
     	public void onClick(View arg0) {
     	    onOAuthGotCode(tOAuthCode.getText().toString());
     	}
@@ -170,7 +169,6 @@ public class AndWell extends Activity implements AuthHandler {
     
     private OnClickListener getOAuthCodeListener = new OnClickListener()
     {
-    	@Override
     	public void onClick(View arg0) {
     		doLoginOAuth();
     	}

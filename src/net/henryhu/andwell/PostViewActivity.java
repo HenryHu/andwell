@@ -90,7 +90,6 @@ public class PostViewActivity extends Activity {
     		_only_new = only_new;
     	}
     	
-    	@Override
 		public void onClick(View arg0) {
     		new LoadNextPostTask().execute(_forward, _last_one, _only_new);
     	}
@@ -102,7 +101,6 @@ public class PostViewActivity extends Activity {
     	{
     		_up = up;
     	}
-		@Override
 		public void onClick(View arg0) {
 			int delta = 0;
 			if (_up)

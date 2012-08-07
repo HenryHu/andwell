@@ -56,14 +56,12 @@ public class NewPostActivity extends Activity {
         qmd_in.setText(pref.getString("qmd_id", ""));
         
         post_btn.setOnClickListener(new OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				showConfirm("post");
 			}
         });
         
         cancel_btn.setOnClickListener(new OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				showConfirm("cancel");
 			}

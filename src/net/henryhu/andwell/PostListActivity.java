@@ -139,7 +139,6 @@ public class PostListActivity extends ListActivity {
     	Button bCancel = (Button) dialog.findViewById(R.id.bCancel_inputdialog);
     	bOK.setOnClickListener(new OnClickListener() {
 
-			@Override
 			public void onClick(View arg0) {
 				int postid = Integer.parseInt(tValue.getText().toString());
 				if (postid < 1)
@@ -154,7 +153,6 @@ public class PostListActivity extends ListActivity {
     	});
     	bCancel.setOnClickListener(new OnClickListener() {
 
-			@Override
 			public void onClick(View arg0) {
 				dismissDialog(INPUT_DIALOG_ID);
 			}
