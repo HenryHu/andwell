@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -181,7 +182,7 @@ public class PostViewActivity extends Activity {
     			updateTitle();
     			SpannableStringBuilder content = new SpannableStringBuilder();
     			SpannableStringBuilder qmd = new SpannableStringBuilder();
-    			parsePost(result.second, content, qmd);
+    			parsePost(result.second, content, qmd, tContent.getPaint(), tQMD.getPaint());
     			tContent.setText(content);
     			tQMD.setText(qmd);
     		}
@@ -303,7 +304,7 @@ public class PostViewActivity extends Activity {
 		}
     }
     
-    public void parsePost(String orig, SpannableStringBuilder content, SpannableStringBuilder qmd)
+    public void parsePost(String orig, SpannableStringBuilder content, SpannableStringBuilder qmd, Paint pContent, Paint pQmd)
     {
     	String o_content, o_qmd;
     	int qmdStart = orig.lastIndexOf("\n--\n");
@@ -315,8 +316,9 @@ public class PostViewActivity extends Activity {
     		o_content = orig;
     		o_qmd = "";
     	}
-    	content.append(new TermFormatter().parseFormat(o_content, false));
-    	qmd.append(new TermFormatter().parseFormat(o_qmd, true));
+    	
+    	content.append(new TermFormatter().parseFormat(o_content, false, pContent));
+    	qmd.append(new TermFormatter().parseFormat(o_qmd, true, pQmd));
 //    	Log.d("QMD Start: ", String.valueOf(qmdStart));
     }
     

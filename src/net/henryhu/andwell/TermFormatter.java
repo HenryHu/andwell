@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.graphics.Paint;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
@@ -16,6 +17,9 @@ public class TermFormatter {
 	private Color color;
 	private Style style;
 	int curpos;
+	float eng_width, chn_width;
+	float chn_scale;
+	
 	abstract class Format {
 		private int _start;
 		Format()
@@ -233,8 +237,12 @@ public class TermFormatter {
 		style.setUnderline(false);
 	}
 	
-    public SpannableStringBuilder parseFormat(String orig, boolean artMode)
+    public SpannableStringBuilder parseFormat(String orig, boolean artMode, Paint paint)
     {
+    	eng_width = paint.measureText("a");
+    	chn_width = paint.measureText("啊");
+    	chn_scale = 2 * eng_width / chn_width; // 2 * eng_width = chn_scale * chn_width
+    	
     	str = new SpannableStringBuilder();
     	curpos = 0;
     	
@@ -461,7 +469,7 @@ public class TermFormatter {
 			if (isChinese(ch))
 			{
 				if (artMode)
-					str.setSpan(new RelativeSizeSpan((float) 1.26), curpos - 1, curpos,
+					str.setSpan(new RelativeSizeSpan(chn_scale), curpos - 1, curpos,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			} else if ((ch & 0xf000) == 0x2000)
 			{
