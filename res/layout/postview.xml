@@ -1,56 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent" android:orientation="vertical">
-    <ScrollView android:layout_height="match_parent" android:id="@+id/scrollView1" android:layout_weight="1" android:layout_width="match_parent">
-        <LinearLayout android:id="@+id/linearLayout1" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
-                <net.henryhu.andwell.PatchedTextView android:id="@+id/tContent" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="" android:typeface="monospace"></net.henryhu.andwell.PatchedTextView>
-                <HorizontalScrollView android:id="@+id/horizontalScrollView1" android:layout_width="wrap_content" android:layout_height="wrap_content">
-                    <net.henryhu.andwell.PatchedTextView android:layout_height="match_parent" android:id="@+id/tQMD" android:layout_width="match_parent" android:typeface="monospace" android:maxWidth="640dp"></net.henryhu.andwell.PatchedTextView>
-                </HorizontalScrollView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lPostView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <net.henryhu.andwell.ContentAwareScrollView
+        android:id="@+id/scrollPost_PostView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:scrollbars="vertical" >
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <net.henryhu.andwell.PatchedTextView
+                android:id="@+id/tContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:longClickable="true"
+                android:typeface="monospace" />
+
+            <HorizontalScrollView
+                android:id="@+id/sQmd_PostView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" >
+
+                <net.henryhu.andwell.PatchedTextView
+                    android:id="@+id/tQMD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:maxWidth="640dp"
+                    android:typeface="monospace" />
+            </HorizontalScrollView>
         </LinearLayout>
-    </ScrollView>
+
+    </net.henryhu.andwell.ContentAwareScrollView>
+
     <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout2" android:layout_width="match_parent"></LinearLayout>
-    <TableLayout android:id="@+id/tableLayout1" android:layout_width="match_parent" android:layout_gravity="center|bottom" android:layout_height="wrap_content" android:layout_weight="0.1">
-        <TableRow android:id="@+id/tableRow1" android:layout_gravity="center" android:layout_height="wrap_content" android:layout_width="match_parent">
-            <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_height="wrap_content" android:layout_weight="1">
+    <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_height="wrap_content" android:layout_weight="0.1">
 
-                <Button
-                    android:id="@+id/bPrev_PostView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/bPrev" >
+                <Button android:id="@+id/bPrev_PostView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/bPrev">
 </Button>
 
-                <Button
-                    android:id="@+id/bNext_PostView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/bNext_caption" >
+                <Button android:id="@+id/bNext_PostView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/bNext_caption">
 </Button>
 
-                <Button
-                    android:id="@+id/bUp_PostView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_weight="1"
-                    android:text="@string/bUp_caption" >
+                <Button android:id="@+id/bUp_PostView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="right" android:layout_weight="1" android:text="@string/bUp_caption">
 </Button>
 
-                <Button
-                    android:id="@+id/bDown_PostView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_weight="1"
-                    android:text="@string/bDown_caption" >
+                <Button android:id="@+id/bDown_PostView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="right" android:layout_weight="1" android:text="@string/bDown_caption">
 </Button>
-            </LinearLayout>
-        </TableRow>
+            </LinearLayout><TableLayout android:id="@+id/tableLayout1" android:layout_width="match_parent" android:layout_gravity="center|bottom" android:layout_height="wrap_content" android:layout_weight="0.1">
+        
     </TableLayout>
 
 </LinearLayout>

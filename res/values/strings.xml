@@ -33,4 +33,5 @@
     <string name="postview_menu_threadfirst">First post in the thread</string>
     <string name="postview_menu_threadfirst_short">Thread First</string>
     <string name="postview_menu_threadfirstnew">First New</string>
+    <string name="logincode_btn">Login with authorization code</string>
 </resources>

@@ -18,12 +18,18 @@ import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.util.Log;
 import android.util.Pair;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,11 +38,15 @@ public class PostViewActivity extends Activity {
 	TextView tContent = null;
 	TextView tQMD = null;
 	Button bPrev = null, bNext = null, bUp = null, bDown = null;
-	float target_prop;
+	ScrollView sPost;
+	HorizontalScrollView sQmd;
 	String basePath;
 	ProgressDialog busyDialog = null;
 	int post_id, post_xid;
 	ArrayList<Integer> post_viewed;
+	GestureDetector gestures;
+	float FLING_MIN_DIST = 0.1f;
+	float FLING_MIN_SPEED = 0.1f;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,23 +59,62 @@ public class PostViewActivity extends Activity {
         bNext = (Button)findViewById(R.id.bNext_PostView);
         bUp = (Button)findViewById(R.id.bUp_PostView);
         bDown = (Button)findViewById(R.id.bDown_PostView);
+        sPost = (ScrollView)findViewById(R.id.scrollPost_PostView);
+        sQmd = (HorizontalScrollView)findViewById(R.id.sQmd_PostView);
         bUp.setOnClickListener(new ButtonClickListener(true));
         bDown.setOnClickListener(new ButtonClickListener(false));
         bPrev.setOnClickListener(new ThreadClickListener(false));
         bNext.setOnClickListener(new ThreadClickListener(true));
 		basePath = pref.getString("server_api", "");
-        
+		gestures = new GestureDetector(new SimpleOnGestureListener() {
+			@Override
+			public boolean onFling(MotionEvent e1, MotionEvent e2,
+					float velocityX, float velocityY) {
+				float width = tContent.getWidth();
+				if (e1 == null) {
+					Log.e("onFling", "e1 null");
+					return false;
+				}
+				if (e2 == null) {
+					Log.e("onFling", "e2 null");
+					return false;
+				}
+				Log.d("PostView.onFling", 
+						String.format("e1.X: %f e2.X: %f vX: %f vY: %f width: %f", 
+								e1.getX(), e2.getX(), velocityX, velocityY, width));
+				if (Math.abs(e1.getX() - e2.getX()) / width > FLING_MIN_DIST
+						&& Math.abs(velocityX) / width > FLING_MIN_SPEED) {
+					if (e2.getX() > e1.getX()) {
+						switchPost(true);
+					} else {
+						switchPost(false);
+					}
+					return true;
+				}
+				return false;
+			}
+
+			public void onLongPress(MotionEvent e) {
+				
+			}
+		});
+		
+		OnTouchListener detectGesture = new OnTouchListener() {
+
+			public boolean onTouch(View v, MotionEvent event) {
+		    	return gestures.onTouchEvent(event);
+			}
+			
+		} ;
+		
+		tContent.setOnTouchListener(detectGesture);
+		sPost.setOnTouchListener(detectGesture);
+		
         TextPaint tp = tQMD.getPaint();
         StringBuilder sb = new StringBuilder();
         for (int i=0; i<80; i++)
         	sb.append(" ");
         tQMD.setMaxWidth((int) tp.measureText(sb.toString()));
-        float space_width = tp.measureText(" ");
-        float chn_width = tp.measureText("一");
-        target_prop = 2 / (chn_width / space_width);
-        Log.d("target_prop: ", String.valueOf(target_prop));
-/*        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/WenQuanYiZenHeiMono.ttf");
-        tQMD.setTypeface(tf);*/
         post_id = getIntent().getExtras().getInt("id");
         post_xid = getIntent().getExtras().getInt("xid");
         post_viewed = new ArrayList<Integer>();
@@ -95,6 +144,24 @@ public class PostViewActivity extends Activity {
     		new LoadNextPostTask().execute(_forward, _last_one, _only_new);
     	}
     }
+    
+    void switchPost(boolean up) {
+		int delta = 0;
+		if (up)
+			delta = -1;
+		else
+			delta = 1;
+		int new_post_id = post_id + delta;
+		if (new_post_id <= 1)
+		{
+			Toast toast = Toast.makeText(getApplicationContext(), 
+					"You are at the start of the history", Toast.LENGTH_SHORT);
+			toast.show();
+		}
+		else
+			LoadPost(new_post_id);
+
+    }
 
     class ButtonClickListener implements OnClickListener {
     	private boolean _up;
@@ -103,20 +170,7 @@ public class PostViewActivity extends Activity {
     		_up = up;
     	}
 		public void onClick(View arg0) {
-			int delta = 0;
-			if (_up)
-				delta = -1;
-			else
-				delta = 1;
-			int new_post_id = post_id + delta;
-			if (new_post_id <= 1)
-			{
-				Toast toast = Toast.makeText(getApplicationContext(), 
-						"You are at the start of the history", Toast.LENGTH_SHORT);
-				toast.show();
-			}
-			else
-				LoadPost(new_post_id);
+			switchPost(_up);
 		}
     };
 
