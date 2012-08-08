@@ -34,6 +34,7 @@ public class Utils {
 	public static final String PREFS_FILE = "MainPref";
 	public static final int soTimeoutMs = 10000;
 	public static final int connTimeoutMs = 20000;
+	public static boolean debug = false;
 	
 	static HttpClient client = null;
 
@@ -76,7 +77,8 @@ public class Utils {
 		
 		HttpGet get = new HttpGet(basePath + path + "?" + args);
 		
-		Log.d("get path", basePath + path + "?" + args);
+		if (debug)
+			Log.d("get path", basePath + path + "?" + args);
 		
 		if (client == null) {
 			client = getNewHttpClient();
@@ -126,7 +128,8 @@ public class Utils {
 				sb.append(buf, 0, nread);
 			}
 			br.close();
-			Log.d("ReadAll", "ret: " + sb.toString());
+			if (debug)
+				Log.d("ReadAll", "ret: " + sb.toString());
 			return sb.toString();
 		} finally {
 			is.close();
