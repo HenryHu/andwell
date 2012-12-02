@@ -34,4 +34,9 @@
     <string name="postview_menu_threadfirst_short">Thread First</string>
     <string name="postview_menu_threadfirstnew">First New</string>
     <string name="logincode_btn">Login with authorization code</string>
+    <string name="empty_server_api">Please input server API</string>
+    <string name="log_in">Log In</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="already_first_post">You are at the start of the history.</string>
+    <string name="input_post_id">Please input post ID</string>
 </resources>

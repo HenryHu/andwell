@@ -188,6 +188,10 @@ public class AndWell extends Activity implements AuthHandler {
     {
 		saveSettings();
 		basePath = pref.getString("server_api", "");
+		if (basePath.equals("")) {
+			Utils.showToast(this, getString(R.string.empty_server_api));
+			return;
+		}
     	String url = basePath + "/auth/auth?response_type=code&client_id="
     	+ Defs.OAuthClientID + "&redirect_uri="
     	+ Utils.getOAuthRedirectURI(basePath);
@@ -247,7 +251,7 @@ public class AndWell extends Activity implements AuthHandler {
         
     void onOAuthGotCode(String code)
     {
-    	loginDialog = ProgressDialog.show(myAct, "Log In", "Logging in...");
+    	loginDialog = ProgressDialog.show(myAct, getString(R.string.log_in), getString(R.string.logging_in));
     	Auth.doOAuth(code, handler, (AuthHandler)myAct, basePath);
     }
 }

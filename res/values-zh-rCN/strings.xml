@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, AndWell!</string>
+    <string name="app_name">Well for Android</string>
+    <string name="refresh_all">全部刷新</string>
+    <string name="refresh">刷新</string>
+    <string name="jumpto">跳到帖子</string>
+    <string name="authcode_label">验证码:</string>
+    <string name="getauthcode_btn">获取验证码</string>
+    <string name="loginoauth_btn">通过OAuth登录</string>
+    <string name="label_server_api">服务器API地址:</string>
+    <string name="text_server_api_hint">例如：http://www.example.com/</string>
+    <string name="text_auth_code_hint">例如：12345678</string>
+    <string name="label_status">欢迎使用!</string>
+    <string name="app_shortname">AndWell</string>
+    <string name="bPrev">同主题上一贴</string>
+    <string name="bNext_caption">同主题下一贴</string>
+    <string name="bUp_caption">前一贴</string>
+    <string name="bDown_caption">后一贴</string>
+    <string name="new_postlist">发帖</string>
+    <string name="new_postlist_short">发帖</string>
+    <string name="newpost_title_label">标题:</string>
+    <string name="newpost_post">发帖</string>
+    <string name="newpost_cancel">取消</string>
+    <string name="newpost_qmd_label">&quot;签名档#&quot;</string>
+    <string name="newpost_anony">匿名发帖</string>
+    <string name="postlist_contextmenu_reply">回复</string>
+    <string name="postlist_contextmenu_rreply">R模式回复</string>
+    <string name="postlist_contextmenu_rreply_short">R回复</string>
+    <string name="postview_menu_reply">回复</string>
+    <string name="postview_menu_RReply">R模式回复</string>
+    <string name="postview_menu_rreply_short">R回复</string>
+    <string name="postview_menu_threadfirst">同主题第一贴</string>
+    <string name="postview_menu_threadfirst_short">同主题第一贴</string>
+    <string name="postview_menu_threadfirstnew">同主题第一个新帖</string>
+    <string name="logincode_btn">利用验证码登录</string>
+    <string name="empty_server_api">请输入服务器API地址</string>
+    <string name="log_in">登录中</string>
+    <string name="logging_in">正在登录...</string>
+    <string name="already_first_post">这里是一切开始的地方。</string>
+    <string name="input_post_id">请输入帖子编号</string>
+</resources>

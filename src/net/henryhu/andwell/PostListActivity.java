@@ -72,10 +72,7 @@ public class PostListActivity extends ListActivity {
             		int end = postslist.get(postslist.size() - 2).id() - 1;
             		if (end == 0)
             		{
-            			Toast toast = Toast.makeText(getApplicationContext(),
-            					"You are at the start of the history.",
-            					Toast.LENGTH_SHORT);
-            			toast.show();
+            			Utils.showToast(getApplicationContext(), getString(R.string.already_first_post)); 
             		} else {
             			postslist.remove(postslist.size() - 1);
                 		new LoadPostsTask().execute(0, 20, end);
@@ -106,7 +103,7 @@ public class PostListActivity extends ListActivity {
         Dialog dialog;
         switch(id) {
         case INPUT_DIALOG_ID:
-        	dialog = createInputDialog("Please input post ID", "", "");
+        	dialog = createInputDialog(getString(R.string.input_post_id), "", "");
         	inputDialog = dialog;
             break;
         default:

@@ -27,8 +27,10 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.Toast;
 
 public class Utils {
 	public static final String PREFS_FILE = "MainPref";
@@ -161,6 +163,13 @@ public class Utils {
 	
 	public static String readResp(HttpResponse resp) throws IllegalStateException, IOException {
 		return readAll(resp.getEntity().getContent());
+	}
+	
+	public static void showToast(Context context, String message) {
+		Toast toast = Toast.makeText(context,
+				message,
+				Toast.LENGTH_LONG);
+		toast.show();
 	}
 
 }
