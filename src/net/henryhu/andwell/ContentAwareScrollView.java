@@ -15,7 +15,7 @@ public class ContentAwareScrollView extends ScrollView {
 
     public ContentAwareScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mGestureDetector = new GestureDetector(new YScrollDetector());
+        mGestureDetector = new GestureDetector(context, new YScrollDetector());
     }
     
     @Override

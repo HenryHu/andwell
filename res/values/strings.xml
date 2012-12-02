@@ -36,7 +36,24 @@
     <string name="logincode_btn">Login with authorization code</string>
     <string name="empty_server_api">Please input server API</string>
     <string name="log_in">Log In</string>
-    <string name="logging_in">Logging in...</string>
+    <string name="logging_in">Logging in&#8230;</string>
     <string name="already_first_post">You are at the start of the history.</string>
     <string name="input_post_id">Please input post ID</string>
+    <string name="fail_to_load_boards">failed to load boards: </string>
+    <string name="illegal_reply">illegal reply from server</string>
+    <string name="fail_to_load_posts">failed to load posts: </string>
+    <string name="postlist_more">Load more posts</string>
+    <string name="postlist_update">Load new posts</string>
+    <string name="no_new_post">No new post</string>
+    <string name="at_thread_tail">You are at the tail of the thread</string>
+    <string name="at_thread_head">You are at the head of the thread</string>
+    <string name="no_more_post">No more post</string>
+    <string name="fail_to_load_post">Failed to load post: </string>
+    <string name="error_with_msg">Error: </string>
+    <string name="please_wait">Please wait&#8230;</string>
+    <string name="quoting_post">Quoting post&#8230;</string>
+    <string name="loading_posts">Loading posts&#8230;</string>
+    <string name="got_next_post_id">Got next post id&#8230;</string>
+    <string name="loading_next_post">Loading next post&#8230;</string>
+    <string name="loading_boards">Loading boards&#8230;</string>
 </resources>

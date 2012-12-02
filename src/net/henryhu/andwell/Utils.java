@@ -28,8 +28,10 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 public class Utils {
@@ -112,10 +114,7 @@ public class Utils {
 	
 	public static String fillTo(String orig, int target)
 	{
-		StringBuilder sb = new StringBuilder(orig);
-		for (int i=0; i<target - orig.length(); i++)
-			sb.append(' ');
-		return sb.toString();
+		return String.format("%" + String.valueOf(target) + "s", orig);
 	}
 	
 	public static String readAll(InputStream is) throws IOException
@@ -170,6 +169,22 @@ public class Utils {
 				message,
 				Toast.LENGTH_LONG);
 		toast.show();
+	}
+	
+	public static boolean useDualPane(Context context) {
+		DisplayMetrics dm = new DisplayMetrics();
+	    WindowManager wm = (WindowManager)(context.getSystemService(Context.WINDOW_SERVICE));
+	    wm.getDefaultDisplay().getMetrics(dm);
+	    double x = dm.widthPixels/dm.xdpi;
+	    // XXX: shall we depend on the real requirements of both panes?
+	    // XXX: what the hell is this magic number?
+	    if (x >= 4)
+	    	return true;
+	    else
+	    	return false;
+//	    double y = dm.heightPixels/dm.ydpi;
+	    
+	    
 	}
 
 }

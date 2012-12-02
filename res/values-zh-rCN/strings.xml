@@ -36,7 +36,24 @@
     <string name="logincode_btn">利用验证码登录</string>
     <string name="empty_server_api">请输入服务器API地址</string>
     <string name="log_in">登录中</string>
-    <string name="logging_in">正在登录...</string>
+    <string name="logging_in">正在登录……</string>
     <string name="already_first_post">这里是一切开始的地方。</string>
     <string name="input_post_id">请输入帖子编号</string>
+    <string name="fail_to_load_boards">无法载入版面列表：</string>
+    <string name="illegal_reply">服务器出毛病了</string>
+    <string name="fail_to_load_posts">不好意思，载入失败：</string>
+    <string name="postlist_more">更老的帖子</string>
+    <string name="postlist_update">新的帖子</string>
+    <string name="no_new_post">这贴全看过了</string>
+    <string name="at_thread_tail">这段故事结束了</string>
+    <string name="at_thread_head">这段故事刚开始</string>
+    <string name="no_more_post">没故事了</string>
+    <string name="fail_to_load_post">抱歉，我败了：</string>
+    <string name="error_with_msg">出错了：</string>
+    <string name="please_wait">请稍候……</string>
+    <string name="quoting_post">看看原来怎么说的……</string>
+    <string name="loading_posts">看看有啥帖子……</string>
+    <string name="got_next_post_id">知道下个帖子在哪了……</string>
+    <string name="loading_next_post">找下一个去……</string>
+    <string name="loading_boards">好多版面……</string>
 </resources>
