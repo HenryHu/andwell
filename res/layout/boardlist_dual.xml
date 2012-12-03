@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/boardlist"
+        android:layout_width="600dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        class="net.henryhu.andwell.BoardListFragment" />
+
+    <FrameLayout
+        android:id="@+id/boardlist_postlist"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+</LinearLayout>

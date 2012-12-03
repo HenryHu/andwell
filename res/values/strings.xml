@@ -4,7 +4,7 @@
     <string name="app_name">Well for Android</string>
     <string name="refresh_all">Refresh All</string>
     <string name="refresh">Refresh</string>
-    <string name="jumpto">Jump To</string>
+    <string name="jumpto">Jump To: </string>
     <string name="authcode_label">Authorization Code:</string>
     <string name="getauthcode_btn">Get Authorization Code</string>
     <string name="loginoauth_btn">Login with OAuth</string>
@@ -56,4 +56,5 @@
     <string name="got_next_post_id">Got next post id&#8230;</string>
     <string name="loading_next_post">Loading next post&#8230;</string>
     <string name="loading_boards">Loading boards&#8230;</string>
+    <string name="jumpto_title">Please input</string>
 </resources>

@@ -1,0 +1,57 @@
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/postlist_entry_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12345"
+                android:textSize="15sp"
+                android:typeface="monospace" />
+
+            <TextView
+                android:id="@+id/postlist_entry_read"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:text="*"
+                android:textSize="15sp"
+                android:typeface="monospace" />
+
+            <TextView
+                android:id="@+id/postlist_entry_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:text="author"
+                android:layout_weight="1"
+                android:textSize="15sp"
+                android:typeface="monospace" />
+            <TextView
+                android:id="@+id/postlist_entry_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Jan 1"
+                android:textSize="15sp"
+                android:typeface="monospace" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/postlist_entry_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Post Title"
+            android:textSize="20sp"
+            android:typeface="monospace" />
+
+    </LinearLayout>

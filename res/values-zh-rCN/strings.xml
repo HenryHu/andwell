@@ -4,7 +4,7 @@
     <string name="app_name">Well for Android</string>
     <string name="refresh_all">全部刷新</string>
     <string name="refresh">刷新</string>
-    <string name="jumpto">跳到帖子</string>
+    <string name="jumpto">跳到帖子：</string>
     <string name="authcode_label">验证码:</string>
     <string name="getauthcode_btn">获取验证码</string>
     <string name="loginoauth_btn">通过OAuth登录</string>
@@ -56,4 +56,5 @@
     <string name="got_next_post_id">知道下个帖子在哪了……</string>
     <string name="loading_next_post">找下一个去……</string>
     <string name="loading_boards">好多版面……</string>
+    <string name="jumpto_title">请告诉我</string>
 </resources>

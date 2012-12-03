@@ -3,8 +3,9 @@
               android:layout_height="fill_parent"
               android:padding="10dp"
               android:orientation="vertical" android:layout_width="match_parent">
+
     <LinearLayout android:id="@+id/linearLayout1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal">
-        <TextView android:text="Post ID: " android:id="@+id/tPrompt_inputdialog" android:layout_width="wrap_content" android:textSize="20dp" android:layout_gravity="center_vertical" android:layout_height="wrap_content"></TextView>
+        <TextView android:text="Post ID: " android:id="@+id/tPrompt_inputdialog" android:layout_width="wrap_content" android:textSize="20dp" android:layout_gravity="center_vertical" android:layout_height="wrap_content" android:padding="10dp"></TextView>
         <EditText android:layout_height="wrap_content" android:id="@+id/tValue_inputdialog" android:layout_width="wrap_content" android:minWidth="100dp" android:numeric="integer"></EditText>
     </LinearLayout>
     <LinearLayout android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:layout_width="match_parent">

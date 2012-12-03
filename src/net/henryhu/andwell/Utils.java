@@ -40,6 +40,7 @@ public class Utils {
 	public static final int connTimeoutMs = 20000;
 	public static boolean debug = false;
 	
+	static Object clientLock = new Object();
 	static HttpClient client = null;
 
 	public static String getOAuthRedirectURI(String basePath)
@@ -83,12 +84,14 @@ public class Utils {
 		
 		if (debug)
 			Log.d("get path", basePath + path + "?" + args);
-		
-		if (client == null) {
-			client = getNewHttpClient();
-		}
+
 		HttpResponse resp = null;
-		resp = client.execute(get);
+		synchronized(clientLock) {
+			if (client == null) {
+				client = getNewHttpClient();
+			}
+			resp = client.execute(get);
+		}
 		return resp;
 	}
 
@@ -103,12 +106,14 @@ public class Utils {
 		catch (UnsupportedEncodingException e)	{ }
 		ent.setContentType(URLEncodedUtils.CONTENT_TYPE);
 		post.setEntity(ent);
-		if (client == null) {
-			client = getNewHttpClient();
-		}
-
 		HttpResponse resp = null;
-		resp = client.execute(post);
+		synchronized(clientLock) {
+			if (client == null) {
+				client = getNewHttpClient();
+			}
+
+			resp = client.execute(post);
+		}
 		return resp;
 	}
 	
@@ -171,14 +176,15 @@ public class Utils {
 		toast.show();
 	}
 	
-	public static boolean useDualPane(Context context) {
+	public static boolean useDualPane(Context context, double inchLeft, double inchRight) {
 		DisplayMetrics dm = new DisplayMetrics();
 	    WindowManager wm = (WindowManager)(context.getSystemService(Context.WINDOW_SERVICE));
 	    wm.getDefaultDisplay().getMetrics(dm);
 	    double x = dm.widthPixels/dm.xdpi;
 	    // XXX: shall we depend on the real requirements of both panes?
 	    // XXX: what the hell is this magic number?
-	    if (x >= 4)
+	    // TODO: automatic resize
+	    if (x >= inchLeft + inchRight)
 	    	return true;
 	    else
 	    	return false;
