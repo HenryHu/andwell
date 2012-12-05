@@ -75,7 +75,7 @@ public class BoardListFragment extends ListFragment {
     
     void loadBoards()
     {
-    	String mode = pref.getString("mainmenu_mode", "BOARDS");
+    	String mode = getArguments().getString("mode");
     	if (mode.equals("BOARDS"))
     	{
     		new LoadBoardsTask().execute(0);

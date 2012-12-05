@@ -57,4 +57,7 @@
     <string name="loading_next_post">找下一个去……</string>
     <string name="loading_boards">好多版面……</string>
     <string name="jumpto_title">请告诉我</string>
+    <string name="mainmenu_boards">版面列表</string>
+    <string name="mainmenu_favboards">收藏夹</string>
+    <string name="mainmenu_logout">注销</string>
 </resources>

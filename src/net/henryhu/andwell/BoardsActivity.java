@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 public class BoardsActivity extends FragmentActivity implements BoardListFragment.BoardListener, PostListFragment.PostListener {
 	private SharedPreferences pref = null;
 	PostListFragment postlistFrag = null;
+	BoardListFragment boardlistFrag = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +20,14 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
         	setContentView(R.layout.boardlist_dual);
         else
         	setContentView(R.layout.boardlist);
+        
+        if (savedInstanceState == null) {
+        	boardlistFrag = new BoardListFragment();
+        	Bundle bundle = new Bundle();
+        	bundle.putString("mode", getIntent().getExtras().getString("boardlist_mode"));
+        	boardlistFrag.setArguments(bundle);
+        	getSupportFragmentManager().beginTransaction().replace(R.id.boardlist, boardlistFrag).commit();
+        }
 	}
 	
 	public void onBoardSelected(BoardItem board) {

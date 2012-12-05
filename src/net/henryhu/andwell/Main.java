@@ -1,40 +1,115 @@
 package net.henryhu.andwell;
 
-import net.henryhu.andwell.R;
+import java.io.IOException;
+
+import org.apache.http.HttpResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
 public class Main extends ListActivity {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	
-	@SuppressWarnings("rawtypes")
-	static final ListItem[] MAINMENU = {
-		new ListItem<String>("Boards", "BOARDS"), 
-		new ListItem<String>("Favourite Boards", "FAVBOARDS"),
+	static class MainMenuItem {
+		interface MainMenuListener {
+			public void onEnter(Context context);
+		}
+		
+		MainMenuListener listener;
+		int titleResId;
+		public MainMenuItem(int _titleResId, MainMenuListener _listener) {
+			titleResId = _titleResId;
+			listener = _listener;
+		}
+		
+		public int getTitleResId() { return titleResId; }
+		public void enter(Context context) {
+			listener.onEnter(context);
+		}
+	}
+	
+	class MainMenuAdapter extends ArrayAdapter<MainMenuItem> {
+
+		public MainMenuAdapter(Context context, int textViewResourceId,
+				MainMenuItem[] objects) {
+			super(context, textViewResourceId, objects);
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			MainMenuItem item = this.getItem(position);
+			View target = null;
+			if (convertView != null) {
+				target = convertView;
+			} else {
+				LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				target = vi.inflate(R.layout.mainmenu, null);
+			}
+			TextView title = (TextView)target.findViewById(R.id.mainmenu_title);
+			title.setText(getString(item.getTitleResId()));
+			return target;
+		}
+		
+		@Override
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			return getView(position, convertView, parent);
+		}
+	}
+
+	static final MainMenuItem[] MAINMENU = {
+		new MainMenuItem(R.string.mainmenu_boards, new MainMenuItem.MainMenuListener() {
+			@Override
+			public void onEnter(Context context) {
+           		Intent intent = new Intent(context, BoardsActivity.class);
+           		intent.putExtra("boardlist_mode", "BOARDS");
+           		context.startActivity(intent);
+			}
+		}),
+		new MainMenuItem(R.string.mainmenu_favboards, new MainMenuItem.MainMenuListener() {
+			@Override
+			public void onEnter(Context context) {
+        		Intent intent = new Intent(context, BoardsActivity.class);
+           		intent.putExtra("boardlist_mode", "FAVBOARDS");
+        		context.startActivity(intent);
+			}
+		}),
+		new MainMenuItem(R.string.mainmenu_logout, new MainMenuItem.MainMenuListener() {
+			@Override
+			public void onEnter(Context context) {
+				((Main)context).logout();
+			}
+		}),
 	};
+	
     /** Called when the activity is first created. */
-    @SuppressWarnings("unchecked")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myAct = this;
         pref = getSharedPreferences(Utils.PREFS_FILE, MODE_PRIVATE);
         
-        setListAdapter(new ArrayAdapter<ListItem<String>>(this, R.layout.mainmenu, MAINMENU));
+        setListAdapter(new MainMenuAdapter(this, R.layout.mainmenu, MAINMENU));
         
         ListView lv = getListView();
         lv.setTextFilterEnabled(true);
@@ -43,17 +118,8 @@ public class Main extends ListActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
               // When clicked, show a toast with the TextView text
-            	ListItem<String> item = (ListItem<String>)MAINMENU[position];
-            	pref.edit().putString("mainmenu_mode", item.id()).commit();
-            	if (item.id().equals("BOARDS"))
-            	{
-            		Intent intent = new Intent(myAct, BoardsActivity.class);
-            		startActivity(intent);
-            	} else if (item.id().equals("FAVBOARDS"))
-            	{
-            		Intent intent = new Intent(myAct, BoardsActivity.class);
-            		startActivity(intent);
-            	}
+            	MainMenuItem item = MAINMENU[position];
+            	item.enter(myAct);
             }
           });
 
