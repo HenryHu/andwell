@@ -43,8 +43,6 @@
         </LinearLayout>
 
     </net.henryhu.andwell.ContentAwareScrollView>
-
-    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout2" android:layout_width="match_parent"></LinearLayout>
     <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_height="wrap_content" android:layout_weight="0.1">
 
                 <Button android:id="@+id/bPrev_PostView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/bPrev">
@@ -58,8 +56,6 @@
 
                 <Button android:id="@+id/bDown_PostView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="right" android:layout_weight="1" android:text="@string/bDown_caption">
 </Button>
-            </LinearLayout><TableLayout android:id="@+id/tableLayout1" android:layout_width="match_parent" android:layout_gravity="center|bottom" android:layout_height="wrap_content" android:layout_weight="0.1">
-        
-    </TableLayout>
+            </LinearLayout>
 
 </LinearLayout>
