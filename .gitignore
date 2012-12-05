@@ -3,4 +3,5 @@ gen/
 pub/
 Defs.java
 .directory
-
+local.properties
+.settings/
