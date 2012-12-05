@@ -30,6 +30,7 @@ import android.widget.TextView;
 public class Main extends ListActivity {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
+	private String basePath = null;
 	
 	static class MainMenuItem {
 		interface MainMenuListener {
@@ -122,7 +123,10 @@ public class Main extends ListActivity {
             	item.enter(myAct);
             }
           });
-
+        
+		basePath = pref.getString("server_api", "");
+		if (savedInstanceState == null)
+			loadUserInfo();
     }
     
     void logout()
@@ -155,5 +159,52 @@ public class Main extends ListActivity {
         default:
             return super.onOptionsItemSelected(item);
         }
+    }
+    
+    class LoadUserInfoTask extends AsyncTask<Object, Object, Object> {
+
+		@Override
+		protected Object doInBackground(Object... params) {
+    		RequestArgs args = new RequestArgs(pref.getString("token", ""));
+    		
+    		try {
+    			HttpResponse resp = Utils.doGet(basePath, "/user/detail", args.getValue());
+    			Pair<String, String> result = Utils.parseResult(resp);
+
+       			if (result.first.equals("OK"))
+       			{
+       				JSONObject obj = null;
+       				try {
+       					obj = new JSONObject(Utils.readResp(resp));
+
+       					int sig_count = obj.getInt("signum");
+       					pref.edit().putInt("signature_count", sig_count).commit();
+       					return "OK";
+       				} catch (JSONException e)
+       				{
+       					return new Pair<String, String>("JSON parse error: " + e.getMessage(), "");
+        			}
+        		} else {
+        			return result;
+        		}
+        	}
+        	catch (IOException e)
+        	{
+        		return new Pair<String, String>("IOException " + e.getMessage(), "");
+        	}
+		}
+		
+		@Override
+		protected void onPostExecute(Object result) {
+			if (result.equals("OK"))
+				Utils.showToast(myAct, getString(R.string.userinfo_updated));
+			else
+				Utils.showToast(myAct, getString(R.string.userinfo_update_fail));
+		}
+    	
+    }
+    
+    public void loadUserInfo() {
+    	new LoadUserInfoTask().execute();
     }
 }

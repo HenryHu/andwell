@@ -60,4 +60,6 @@
     <string name="mainmenu_boards">Boards</string>
     <string name="mainmenu_favboards">Favourite Boards</string>
     <string name="mainmenu_logout">Logout</string>
+    <string name="userinfo_updated">User info updated</string>
+    <string name="userinfo_update_fail">Fail to update user info</string>
 </resources>

@@ -60,4 +60,6 @@
     <string name="mainmenu_boards">版面列表</string>
     <string name="mainmenu_favboards">收藏夹</string>
     <string name="mainmenu_logout">注销</string>
+    <string name="userinfo_updated">已经掌握了您的最新个人资料</string>
+    <string name="userinfo_update_fail">抱歉，无法掌握您最新的个人资料</string>
 </resources>
