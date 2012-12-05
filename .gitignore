@@ -5,3 +5,4 @@ Defs.java
 .directory
 local.properties
 .settings/
+ant.properties
