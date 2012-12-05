@@ -57,6 +57,8 @@
     <string name="loading_next_post">Loading next post&#8230;</string>
     <string name="loading_boards">Loading boards&#8230;</string>
     <string name="jumpto_title">Please input</string>
+    <string name="qmd_random">Random</string>
+    <string name="qmd_none">None</string>
     <string name="mainmenu_boards">Boards</string>
     <string name="mainmenu_favboards">Favourite Boards</string>
     <string name="mainmenu_logout">Logout</string>

@@ -1,29 +1,38 @@
 package net.henryhu.andwell;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class NewPostActivity extends Activity {
 	SharedPreferences pref;
 	EditText title_in;
 	EditText content_in;
-	EditText qmd_in;
+	Spinner qmd_in;
 	CheckBox anony_in;
 	Button post_btn;
 	Button cancel_btn;
@@ -40,7 +49,7 @@ public class NewPostActivity extends Activity {
         
         title_in = (EditText)findViewById(R.id.newpost_title);
         content_in = (EditText)findViewById(R.id.newpost_content);
-        qmd_in = (EditText)findViewById(R.id.newpost_qmd_id);
+        qmd_in = (Spinner)findViewById(R.id.newpost_qmd_id);
         anony_in = (CheckBox)findViewById(R.id.newpost_anony);
         post_btn = (Button)findViewById(R.id.newpost_post);
         cancel_btn = (Button)findViewById(R.id.newpost_cancel);
@@ -53,7 +62,18 @@ public class NewPostActivity extends Activity {
         	content_in.setText(content);
         else
         	content_in.setText("\nSent from AndWell");
-        qmd_in.setText(pref.getString("qmd_id", ""));
+        int max_qmd_num = pref.getInt("signature_count", 100);
+        List<QmdSelection> qmds = new ArrayList<QmdSelection>();
+        qmds.add(QmdSelection.getRandomItem());
+        qmds.add(QmdSelection.getNoneItem());
+        for (int i=1; i<=max_qmd_num; i++)
+        	qmds.add(new QmdSelection(i));
+        QmdAdapter adapter = new QmdAdapter(this, 0, qmds);
+        qmd_in.setAdapter(adapter);
+        
+        for (int i = 0; i < qmd_in.getCount(); i++)
+        	if (((QmdSelection)qmd_in.getItemAtPosition(i)).id() == pref.getInt("qmd_id", 0))
+        		qmd_in.setSelection(i);
         
         post_btn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -97,18 +117,14 @@ public class NewPostActivity extends Activity {
 		String content = content_in.getText().toString();
 		int anony = anony_in.isChecked() ? 1 : 0;
 		int sig_id = 0;
-		if (!qmd_in.getText().toString().equals(""))
-			try {
-				sig_id = Integer.valueOf(qmd_in.getText().toString());
-			} catch (Exception e) {
-				showMsg("invalid qmd number");
-				return;
-			}
+		
+		if (!((QmdSelection)qmd_in.getSelectedItem()).isNoneItem())
+			sig_id = ((QmdSelection)qmd_in.getSelectedItem()).id();
 		if (title.equals("")) {
 			showMsg("Please input title");
 			return;
 		}
-		pref.edit().putString("qmd_id", qmd_in.getText().toString()).commit();
+		pref.edit().putInt("qmd_id", ((QmdSelection)qmd_in.getSelectedItem()).id()).commit();
 		
 		int re_id = this.getIntent().getExtras().getInt("re_id");
 		int re_xid = this.getIntent().getExtras().getInt("re_xid");
@@ -196,6 +212,59 @@ public class NewPostActivity extends Activity {
 	
 	void showMsg(String msg) {
 		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+	}
+	
+	static class QmdSelection {
+		int id;
+		static final int RANDOM_ID = -1;
+		static final int NONE_ID = 0;
+		public QmdSelection(int _id) {
+			id = _id;
+		}
+		public int id() { return id; }
+		public static QmdSelection getRandomItem() { return new QmdSelection(RANDOM_ID); }
+		public static QmdSelection getNoneItem() { return new QmdSelection(NONE_ID); }
+		public boolean isRandomItem() { return id == RANDOM_ID; }
+		public boolean isNoneItem() { return id == NONE_ID; }
+		@Override
+		public String toString() {
+			return String.valueOf(id);
+		}
+	}
+	
+	class QmdAdapter extends ArrayAdapter<QmdSelection> {
+
+		public QmdAdapter(Context context, int textViewResourceId,
+				List<QmdSelection> objects) {
+			super(context, textViewResourceId, objects);
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			QmdSelection item = this.getItem(position);
+			TextView target = null;
+			if (convertView != null) {
+				target = (TextView)convertView;
+			} else {
+				target = new TextView(getContext());
+				target.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				target.setTextColor(Color.BLACK);
+			}
+			if (item.isRandomItem()) {
+				target.setText(getString(R.string.qmd_random));
+			} else if (item.isNoneItem()) {
+				target.setText(getString(R.string.qmd_none));
+			} else {
+				target.setText(String.valueOf(item.id()));
+			}
+			return target;
+		}
+		
+		@Override
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			return getView(position, convertView, parent);
+		}
+		
 	}
 	
 }
