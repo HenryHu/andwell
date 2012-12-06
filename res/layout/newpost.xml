@@ -47,14 +47,15 @@
             android:id="@+id/newpost_anony"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="2"
-            android:text="@string/newpost_anony"
-            />
+            android:text="@string/newpost_anony" />
 
         <TextView
             android:id="@+id/newpost_qmd_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:text="@string/newpost_qmd_label"
             android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -63,7 +64,9 @@
             android:id="@+id/newpost_qmd_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:gravity="center"
             android:prompt="@string/newpost_qmd_label" />
 
     </LinearLayout>

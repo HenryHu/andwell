@@ -12,11 +12,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
-import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -72,7 +71,8 @@ public class NewPostActivity extends Activity {
         qmd_in.setAdapter(adapter);
         
         for (int i = 0; i < qmd_in.getCount(); i++)
-        	if (((QmdSelection)qmd_in.getItemAtPosition(i)).id() == pref.getInt("qmd_id", 0))
+        	if (((QmdSelection)qmd_in.getItemAtPosition(i)).id().equals(
+        			pref.getString("qmd_id", String.valueOf(QmdSelection.NONE_ID))))
         		qmd_in.setSelection(i);
         
         post_btn.setOnClickListener(new OnClickListener() {
@@ -119,12 +119,16 @@ public class NewPostActivity extends Activity {
 		int sig_id = 0;
 		
 		if (!((QmdSelection)qmd_in.getSelectedItem()).isNoneItem())
-			sig_id = ((QmdSelection)qmd_in.getSelectedItem()).id();
+			try {
+				sig_id = Integer.parseInt(((QmdSelection)qmd_in.getSelectedItem()).id());
+			} catch (Exception e) {
+				sig_id = 0;
+			}
 		if (title.equals("")) {
 			showMsg("Please input title");
 			return;
 		}
-		pref.edit().putInt("qmd_id", ((QmdSelection)qmd_in.getSelectedItem()).id()).commit();
+		pref.edit().putString("qmd_id", ((QmdSelection)qmd_in.getSelectedItem()).id()).commit();
 		
 		int re_id = this.getIntent().getExtras().getInt("re_id");
 		int re_xid = this.getIntent().getExtras().getInt("re_xid");
@@ -221,7 +225,7 @@ public class NewPostActivity extends Activity {
 		public QmdSelection(int _id) {
 			id = _id;
 		}
-		public int id() { return id; }
+		public String id() { return String.valueOf(id); }
 		public static QmdSelection getRandomItem() { return new QmdSelection(RANDOM_ID); }
 		public static QmdSelection getNoneItem() { return new QmdSelection(NONE_ID); }
 		public boolean isRandomItem() { return id == RANDOM_ID; }
@@ -242,20 +246,23 @@ public class NewPostActivity extends Activity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			QmdSelection item = this.getItem(position);
-			TextView target = null;
+			View target = null;
+			TextView idView = null;
 			if (convertView != null) {
-				target = (TextView)convertView;
+				target = convertView;
 			} else {
-				target = new TextView(getContext());
-				target.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				target.setTextColor(Color.BLACK);
+				LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				target = vi.inflate(R.layout.newpost_qmd_selection, null);
 			}
+			idView = (TextView)target.findViewById(R.id.newpost_qmd_num);
+			if (convertView == null)
+				idView.setTextColor(post_btn.getTextColors().getDefaultColor());
 			if (item.isRandomItem()) {
-				target.setText(getString(R.string.qmd_random));
+				idView.setText(getString(R.string.qmd_random));
 			} else if (item.isNoneItem()) {
-				target.setText(getString(R.string.qmd_none));
+				idView.setText(getString(R.string.qmd_none));
 			} else {
-				target.setText(String.valueOf(item.id()));
+				idView.setText(item.id());
 			}
 			return target;
 		}
