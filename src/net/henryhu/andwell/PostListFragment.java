@@ -176,7 +176,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
             loadPosts(0, 20, 0, 0);
             return true;
         case R.id.mJumpTo_PostList:
-        	showInputDialog(getString(R.string.jumpto_title), getString(R.string.jumpto), "", INPUT_DIALOG_ID);
+        	showInputDialog(getString(R.string.jumpto_title), getString(R.string.jumpto_withid), "", INPUT_DIALOG_ID);
         	return true;
         case R.id.mPostNew_PostList:
         	newPost();
