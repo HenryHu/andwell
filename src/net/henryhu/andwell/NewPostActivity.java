@@ -167,7 +167,7 @@ public class NewPostActivity extends Activity {
 		}
 		
 		protected void onPreExecute() {
-			showBusy("Please wait...", "Posting...");
+			showBusy(getString(R.string.please_wait), getString(R.string.newpost_posting));
 		}
 		
 		protected void onPostExecute(Pair<String, String> result)
