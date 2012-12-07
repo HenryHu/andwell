@@ -84,36 +84,50 @@ public class BoardListFragment extends ListFragment {
     	protected void onPreExecute()
     	{
     		Log.d("BoardListFragment", "LoadBoards: PreExec");
-    		loadDialog = ProgressDialog.show(myAct, getString(R.string.please_wait), getString(R.string.loading_boards));
+    		showBusy(getString(R.string.please_wait), getString(R.string.loading_boards));
     	}
     	@Override
     	protected void onProgressUpdate(LoadBoardsProgress progress)
     	{
-    		if (loadDialog != null)
-    			loadDialog.setMessage("Loaded " + progress.count + " boards");
 			boardslist.add(progress.board);
+			updateBusy("Loaded " + progress.count + " boards");
 			adapter.notifyDataSetChanged();
     	}
     	@Override
     	protected void onPostExecute(BasicArg arg, String result)
     	{
     		Log.d("BoardListFragment", "LoadBoards: PostExec");
-    		if (loadDialog != null)
-    			loadDialog.dismiss();
+    		hideBusy();
    			adapter.notifyDataSetChanged();
     	}
     	@Override
     	protected void onException(BasicArg arg, Exception e) {
-    		if (loadDialog != null)
-    			loadDialog.dismiss();
+    		hideBusy();
 			Utils.showToast(myAct, getString(R.string.fail_to_load_boards) + Exceptions.getErrorMsg(e));    		
     	}
+    }
+    
+    public void showBusy(String title, String msg) {
+    	hideBusy();
+		loadDialog = ProgressDialog.show(myAct, title, msg);
+    }
+    
+    public void updateBusy(String msg) {
+		if (loadDialog != null)
+			loadDialog.setMessage(msg);
+    }
+    
+    public void hideBusy() {
+		if (loadDialog != null) {
+			loadDialog.dismiss();
+			loadDialog = null;
+		}
     }
     	
     @Override
     public void onDestroy()
     {
     	super.onDestroy();
-    	loadDialog = null;
+    	hideBusy();
     }
 }

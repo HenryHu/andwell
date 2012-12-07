@@ -188,7 +188,7 @@ public class NewPostActivity extends Activity {
     public void onDestroy()
     {
     	super.onDestroy();
-    	busyDialog = null;
+    	hideBusy();
     }
 	
 	void showMsg(String msg) {

@@ -381,6 +381,6 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     public void onDestroy()
     {
     	super.onDestroy();
-    	busyDialog = null;
+    	hideBusy();
     }
 }

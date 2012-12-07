@@ -387,15 +387,12 @@ public class PostViewFragment extends Fragment implements BusyListener {
     @Override
     public void onPause() {
     	super.onPause();
-    	if (busyDialog != null) {
-    		busyDialog.dismiss();
-    		busyDialog = null;
-    	}
     }
     
     @Override
     public void onDestroy()
     {
     	super.onDestroy();
+    	hideBusy();
     }
 }
