@@ -1,10 +1,7 @@
 package net.henryhu.andwell;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -40,7 +37,6 @@ public class PostViewFragment extends Fragment {
 	int post_id, post_xid;
 	String board;
 	String token;
-	ArrayList<Integer> post_viewed;
 	GestureDetector gestures;
 	float FLING_MIN_DIST = 0.1f;
 	float FLING_MIN_SPEED = 0.1f;
@@ -107,7 +103,6 @@ public class PostViewFragment extends Fragment {
         post_id = getArguments().getInt("id");
         post_xid = getArguments().getInt("xid");
     	board = getArguments().getString("board");
-        post_viewed = new ArrayList<Integer>();
         listener.onPostView(post_id, post_xid);
     }
     
@@ -258,14 +253,12 @@ public class PostViewFragment extends Fragment {
     			busy.hide();
     			post_id = arg.new_post_id;
     			post_xid = result.new_post_xid;
-    			post_viewed.add(post_xid);
     			listener.onPostView(post_id, post_xid);
     			SpannableStringBuilder content = new SpannableStringBuilder();
     			SpannableStringBuilder qmd = new SpannableStringBuilder();
     			parsePost(result.content, content, qmd, tContent.getPaint(), tQMD.getPaint());
     			tContent.setText(content);
     			tQMD.setText(qmd);
-    			updateResult();
     		}
     		
     		@Override
@@ -277,21 +270,6 @@ public class PostViewFragment extends Fragment {
     	}).execute(new LoadPostArg(basePath, token, board, post_id_to_load));
     }
 
-    
-    private void updateResult() {
-    	Intent data = new Intent(myAct, PostViewActivity.class);
-    	Bundle extras = new Bundle();
-    	extras.putInt("id", post_id);
-    	extras.putInt("xid", post_xid);
-    	extras.putIntegerArrayList("post_viewed", post_viewed);
-
-    	data.putExtras(extras);
-
-    	myAct.setResult(Activity.RESULT_OK, data);
-    }
-    
-
-    
     void showError(Exception e)
     {
     	String errMsg;
@@ -303,8 +281,6 @@ public class PostViewFragment extends Fragment {
 		}
 		Utils.showToast(myAct, errMsg);
     }
-    
-    
     
     public void parsePost(String orig, SpannableStringBuilder content, SpannableStringBuilder qmd, Paint pContent, Paint pQmd)
     {
