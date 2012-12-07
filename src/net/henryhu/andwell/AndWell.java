@@ -3,7 +3,6 @@ package net.henryhu.andwell;
 import java.io.IOException;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -28,7 +27,7 @@ public class AndWell extends Activity implements AuthHandler {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	private final Handler handler = new Handler();
-	private ProgressDialog loginDialog = null;
+	BusyDialog busy;
 	private Button bLoginOAuth = null;
 	private Button bGetOAuthCode = null;
 	private EditText tOAuthCode = null;
@@ -40,6 +39,7 @@ public class AndWell extends Activity implements AuthHandler {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         myAct = this;
+        busy = new BusyDialog(myAct);
     	pref = getSharedPreferences(Utils.PREFS_FILE, MODE_PRIVATE);
     	
 //        bLogin = (Button)findViewById(R.id.bLogin);
@@ -90,7 +90,7 @@ public class AndWell extends Activity implements AuthHandler {
     public void onDestroy()
     {
     	super.onDestroy();
-    	loginDialog = null;
+    	busy.hide();
     }
     
     void loadSettings()
@@ -116,7 +116,7 @@ public class AndWell extends Activity implements AuthHandler {
     	if (pref.getString("token", "").equals(""))
     		return;
     	
-    	loginDialog = ProgressDialog.show(myAct, "Log In", "Logging in...");
+    	busy.show(getString(R.string.log_in), getString(R.string.logging_in));
 		Auth.doReauth(pref.getString("token", ""), handler, (AuthHandler)myAct, basePath);
     }
 
@@ -176,7 +176,7 @@ public class AndWell extends Activity implements AuthHandler {
     
 /*    public void doLogin()
     {
-    	loginDialog = ProgressDialog.show(myAct, "Log In", "Logging in...");
+    	busy.show(getString(R.string.log_in), getString(R.string.logging_in));
 		
 		String name = tUsername.getText().toString();
 		String pass = tPassword.getText().toString();
@@ -204,8 +204,7 @@ public class AndWell extends Activity implements AuthHandler {
     
     void authResult(boolean result)
     {
-    	if (loginDialog != null)
-    		loginDialog.dismiss();
+    	busy.hide();
 		if (result)
 		{
 			Intent intent = new Intent(this, Main.class);
@@ -251,7 +250,7 @@ public class AndWell extends Activity implements AuthHandler {
         
     void onOAuthGotCode(String code)
     {
-    	loginDialog = ProgressDialog.show(myAct, getString(R.string.log_in), getString(R.string.logging_in));
+    	busy.show(getString(R.string.log_in), getString(R.string.logging_in));
     	Auth.doOAuth(code, handler, (AuthHandler)myAct, basePath);
     }
 }

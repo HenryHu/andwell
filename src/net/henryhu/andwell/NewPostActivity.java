@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -33,12 +32,13 @@ public class NewPostActivity extends Activity {
 	
 	String basePath;
 	String token;
-	ProgressDialog busyDialog = null;
+	BusyDialog busy;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = getSharedPreferences(Utils.PREFS_FILE, MODE_PRIVATE);
+        busy = new BusyDialog(this);
         
         setContentView(R.layout.newpost);
         
@@ -147,48 +147,29 @@ public class NewPostActivity extends Activity {
 		new NewPostTask(new NewPostListener() {
 			@Override
 			protected void onPreExecute() {
-				showBusy(getString(R.string.please_wait), getString(R.string.newpost_posting));
+				busy.show(getString(R.string.please_wait), getString(R.string.newpost_posting));
 			}
 			@Override
 			protected void onPostExecute(NewPostArg arg, Object result)
 			{
-				hideBusy();
+				busy.hide();
 				showMsg(getString(R.string.posted));
 				setResult(RESULT_OK);
 				finish();
 			}
 			@Override
 			protected void onException(NewPostArg arg, Exception e) {
-				hideBusy();
+				busy.hide();
 				showMsg(getString(R.string.error_with_msg) + Exceptions.getErrorMsg(e));
 			}
 		}).execute(new NewPostArg(basePath, token, args));
 	}
-	
-    void showBusy(String title, String msg) {
-    	if (busyDialog != null)
-    		busyDialog.dismiss();
-    	
-		busyDialog = ProgressDialog.show(this, title, msg);
-    }
-    
-    void updateBusy(String msg) {
-		if (busyDialog != null)
-			busyDialog.setMessage(msg);
-    }
-    
-    void hideBusy() {
-		if (busyDialog != null) {
-			busyDialog.dismiss();
-			busyDialog = null;
-		}
-    }
     
     @Override
     public void onDestroy()
     {
     	super.onDestroy();
-    	hideBusy();
+    	busy.hide();
     }
 	
 	void showMsg(String msg) {

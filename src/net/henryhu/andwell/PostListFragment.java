@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,11 +25,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener, BusyListener {
+public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	List<PostItem> postslist = new ArrayList<PostItem>();
-	ProgressDialog busyDialog = null;
+	BusyDialog busy;
 	ArrayAdapter<PostItem> adapter;
 	static final int INPUT_DIALOG_ID = 0;
 	public static final int ACTION_POST = 1;
@@ -62,6 +61,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myAct = getActivity();
+        busy = new BusyDialog(myAct);
         pref = myAct.getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
         adapter = new PostListAdapter(myAct, R.layout.postlist, postslist);
         setListAdapter(adapter);
@@ -201,7 +201,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	protected void onPreExecute()
     	{
     		Log.d("PostListFragment", "LoadPosts: PreExec");
-    		showBusy(getString(R.string.please_wait), getString(R.string.loading_posts));
+    		busy.show(getString(R.string.please_wait), getString(R.string.loading_posts));
     	}
     	
     	@Override
@@ -212,14 +212,14 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		else
     			postslist.add(progress.insertpos, progress.item);
     		adapter.notifyDataSetChanged();
-    		updateBusy("Loaded " + progress.count + " posts");
+    		busy.update("Loaded " + progress.count + " posts");
     	}
     	
     	@Override
     	protected void onPostExecute(LoadPostsArg arg, String result)
     	{
     		Log.d("PostListFragment", "LoadPosts: PostExec");
-    		hideBusy();
+    		busy.hide();
     		adapter.notifyDataSetChanged();
     		if (arg.selectid != 0)
     		{
@@ -236,7 +236,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	
     	@Override
     	protected void onException(LoadPostsArg arg, Exception e) {
-    		hideBusy();
+    		busy.hide();
     		String errMsg;
 			if (arg.insertpos == 0)
 				errMsg = getString(R.string.no_more_post);
@@ -263,7 +263,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		args.add("mode", "R");
     	else
     		args.add("mode", "S");
-    	new QuotePostTask(new MyQuotePostListener(this, this)).execute(new QuotePostArg(basePath, args));
+    	new QuotePostTask(new MyQuotePostListener(this, busy)).execute(new QuotePostArg(basePath, args));
     }
     
     public int getFirstPost() {
@@ -294,25 +294,6 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	}
     }
 
-    public void showBusy(String title, String msg) {
-    	if (busyDialog != null)
-    		busyDialog.dismiss();
-    	
-		busyDialog = ProgressDialog.show(myAct, title, msg);
-    }
-    
-    void updateBusy(String msg) {
-		if (busyDialog != null)
-			busyDialog.setMessage(msg);
-    }
-    
-    public void hideBusy() {
-		if (busyDialog != null) {
-			busyDialog.dismiss();
-			busyDialog = null;
-		}
-    }
-    
     public void onPostView(int post_id, int post_xid) {
     	for (int i=0; i<postslist.size(); i++) {
     		PostItem post = postslist.get(i);
@@ -381,6 +362,6 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     public void onDestroy()
     {
     	super.onDestroy();
-    	hideBusy();
+    	busy.hide();
     }
 }

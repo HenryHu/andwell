@@ -3,7 +3,6 @@ package net.henryhu.andwell;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +28,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class PostViewFragment extends Fragment implements BusyListener {
+public class PostViewFragment extends Fragment {
 	private SharedPreferences pref = null;
 	TextView tContent = null;
 	TextView tQMD = null;
@@ -37,7 +36,7 @@ public class PostViewFragment extends Fragment implements BusyListener {
 	ScrollView sPost;
 	HorizontalScrollView sQmd;
 	String basePath;
-	ProgressDialog busyDialog = null;
+	BusyDialog busy;
 	int post_id, post_xid;
 	String board;
 	String token;
@@ -66,6 +65,7 @@ public class PostViewFragment extends Fragment implements BusyListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myAct = getActivity();
+        busy = new BusyDialog(myAct);
         pref = myAct.getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
         setHasOptionsMenu(true);
        
@@ -186,24 +186,24 @@ public class PostViewFragment extends Fragment implements BusyListener {
     class MyLoadNextPostListener extends LoadNextPostListener {
     	protected void onPreExecute()
     	{
-    		showBusy(getString(R.string.please_wait), getString(R.string.loading_next_post));
+    		busy.show(getString(R.string.please_wait), getString(R.string.loading_next_post));
     	}
     	
     	protected void onProgressUpdate(Integer... progress)
     	{
-    		updateBusy(getString(R.string.got_next_post_id));
+    		busy.update(getString(R.string.got_next_post_id));
     	}
     	
     	@Override
     	protected void onPostExecute(LoadNextPostArg arg, LoadNextPostResult result)
     	{
-    		hideBusy();
+    		busy.hide();
     		LoadPost(result.next_id);
     	}
     	
     	@Override
     	protected void onException(LoadNextPostArg arg, Exception e) {
-    		hideBusy();
+    		busy.hide();
 			String msg;
     		if (e instanceof NotFoundException) {
     			if (arg.only_new && !arg.forward) {
@@ -242,20 +242,20 @@ public class PostViewFragment extends Fragment implements BusyListener {
     		protected void onPreExecute()
     		{
     			Log.d("PostViewFragment", "LoadPost: PreExec");
-    			showBusy("Please wait", "Loading post...");
+    			busy.show("Please wait", "Loading post...");
     		}
     		
     		@Override
     		protected void onProgressUpdate(Integer progress)
     		{
-    			updateBusy("Loaded " + String.valueOf(progress) + "%");
+    			busy.update("Loaded " + String.valueOf(progress) + "%");
     		}
 
     		@Override
     		protected void onPostExecute(LoadPostArg arg, LoadPostResult result)
     		{
     			Log.d("PostViewFragment", "LoadPost: PostExec");
-    			hideBusy();
+    			busy.hide();
     			post_id = arg.new_post_id;
     			post_xid = result.new_post_xid;
     			post_viewed.add(post_xid);
@@ -270,7 +270,7 @@ public class PostViewFragment extends Fragment implements BusyListener {
     		
     		@Override
     		protected void onException(LoadPostArg arg, Exception e) {
-    			hideBusy();
+    			busy.hide();
     			showError(e);
     		}
 
@@ -359,30 +359,11 @@ public class PostViewFragment extends Fragment implements BusyListener {
     	args.add("xid", post_xid);
     	args.add("board", board);
     	args.add("mode", mode);
-    	new QuotePostTask(new MyQuotePostListener(this, this)).execute(new QuotePostArg(basePath, args));
+    	new QuotePostTask(new MyQuotePostListener(this, busy)).execute(new QuotePostArg(basePath, args));
     }
     
     public int getPostId() { return post_id; }
     public int getPostXid() { return post_xid; }
-    
-    public void showBusy(String title, String msg) {
-    	if (busyDialog != null) {
-    		busyDialog.dismiss();
-    	}
-		busyDialog = ProgressDialog.show(myAct, title, msg);
-    }
-    
-    void updateBusy(String msg) {
-		if (busyDialog != null)
-			busyDialog.setMessage(msg);
-    }
-    
-    public void hideBusy() {
-		if (busyDialog != null) {
-			busyDialog.dismiss();
-			busyDialog = null;
-		}
-    }
     
     @Override
     public void onPause() {
@@ -393,6 +374,6 @@ public class PostViewFragment extends Fragment implements BusyListener {
     public void onDestroy()
     {
     	super.onDestroy();
-    	hideBusy();
+    	busy.hide();
     }
 }

@@ -218,26 +218,21 @@ class QuotePostTask extends BasicTask<QuotePostArg, String, JSONObject> {
 	}
 }
 
-interface BusyListener {
-	void showBusy(String title, String msg);
-	void hideBusy();
-}
-
 class MyQuotePostListener extends QuotePostListener {
 	Fragment context;
-	BusyListener busy;
-	MyQuotePostListener(Fragment context, BusyListener busy) {
+	BusyDialog busy;
+	MyQuotePostListener(Fragment context, BusyDialog busy) {
 		this.context = context;
 		this.busy = busy;
 	}
 	@Override
 	protected void onPreExecute() {
-		busy.showBusy(context.getString(R.string.please_wait), context.getString(R.string.quoting_post));
+		busy.show(context.getString(R.string.please_wait), context.getString(R.string.quoting_post));
 	}
 	@Override
 	protected void onPostExecute(QuotePostArg arg, JSONObject obj)
 	{
-		busy.hideBusy();
+		busy.hide();
 		try {
 			Intent intent = new Intent(context.getActivity(), NewPostActivity.class);
 			intent.putExtra("board", arg.requestArgs.getString("board"));
@@ -254,7 +249,7 @@ class MyQuotePostListener extends QuotePostListener {
 	}
 	@Override
 	protected void onException(QuotePostArg arg, Exception e) {
-		busy.hideBusy();
+		busy.hide();
 		Utils.showToast(context.getActivity(), context.getString(R.string.error_with_msg) + Exceptions.getErrorMsg(e));
 	}
 }

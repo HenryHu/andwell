@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,16 +17,17 @@ public class BoardListFragment extends ListFragment {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	List<BoardItem> boardslist = new ArrayList<BoardItem>();
-	ProgressDialog loadDialog;
 	ArrayAdapter<BoardItem> adapter;
 	String basePath;
 	BoardListener listener = null;
 	String token;
+	BusyDialog busy;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myAct = getActivity();
+        busy = new BusyDialog(myAct);
         pref = myAct.getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
         adapter = new BoardListAdapter(myAct, R.layout.boardlist_entry, boardslist);
         setListAdapter(adapter);
@@ -84,50 +84,33 @@ public class BoardListFragment extends ListFragment {
     	protected void onPreExecute()
     	{
     		Log.d("BoardListFragment", "LoadBoards: PreExec");
-    		showBusy(getString(R.string.please_wait), getString(R.string.loading_boards));
+    		busy.show(getString(R.string.please_wait), getString(R.string.loading_boards));
     	}
     	@Override
     	protected void onProgressUpdate(LoadBoardsProgress progress)
     	{
 			boardslist.add(progress.board);
-			updateBusy("Loaded " + progress.count + " boards");
+			busy.update("Loaded " + progress.count + " boards");
 			adapter.notifyDataSetChanged();
     	}
     	@Override
     	protected void onPostExecute(BasicArg arg, String result)
     	{
     		Log.d("BoardListFragment", "LoadBoards: PostExec");
-    		hideBusy();
+    		busy.hide();
    			adapter.notifyDataSetChanged();
     	}
     	@Override
     	protected void onException(BasicArg arg, Exception e) {
-    		hideBusy();
+    		busy.hide();
 			Utils.showToast(myAct, getString(R.string.fail_to_load_boards) + Exceptions.getErrorMsg(e));    		
     	}
-    }
-    
-    public void showBusy(String title, String msg) {
-    	hideBusy();
-		loadDialog = ProgressDialog.show(myAct, title, msg);
-    }
-    
-    public void updateBusy(String msg) {
-		if (loadDialog != null)
-			loadDialog.setMessage(msg);
-    }
-    
-    public void hideBusy() {
-		if (loadDialog != null) {
-			loadDialog.dismiss();
-			loadDialog = null;
-		}
     }
     	
     @Override
     public void onDestroy()
     {
     	super.onDestroy();
-    	hideBusy();
+    	busy.hide();
     }
 }
