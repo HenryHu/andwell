@@ -1,10 +1,7 @@
 package net.henryhu.andwell;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.HttpResponse;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,9 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +32,7 @@ public class NewPostActivity extends Activity {
 	Button cancel_btn;
 	
 	String basePath;
+	String token;
 	ProgressDialog busyDialog = null;
 
 	@Override
@@ -88,6 +84,7 @@ public class NewPostActivity extends Activity {
         });
         
         basePath = pref.getString("server_api", "");
+        token = pref.getString("token", "");
     }
 	
 	void showConfirm(final String item) {
@@ -125,7 +122,7 @@ public class NewPostActivity extends Activity {
 				sig_id = 0;
 			}
 		if (title.equals("")) {
-			showMsg("Please input title");
+			showMsg(getString(R.string.please_input_post_title));
 			return;
 		}
 		pref.edit().putString("qmd_id", ((QmdSelection)qmd_in.getSelectedItem()).id()).commit();
@@ -147,45 +144,25 @@ public class NewPostActivity extends Activity {
 			args.add("re_id", re_id);
 		if (re_xid != 0)
 			args.add("re_xid", re_xid);
-		new NewPostTask().execute(args);
-	}
-	
-	private class NewPostTask extends AsyncTask<RequestArgs, String, Pair<String, String>> {
-		RequestArgs args;
-		@Override
-		protected Pair<String, String> doInBackground(RequestArgs... params) {
-			args = params[0];
-			try {
-    			HttpResponse resp = Utils.doPost(basePath, "/post/new", args.getValue());
-    			Pair<String, String> ret = Utils.parseResult(resp);
-    			if (ret.first.equals("OK")) {
-    				Utils.readResp(resp);
-    			}
-    					
-    			return ret;
-    		}
-    		catch (IOException e)
-    		{
-    			return new Pair<String, String>("IOException " + e.getMessage(), "");
-    		}
-		}
-		
-		protected void onPreExecute() {
-			showBusy(getString(R.string.please_wait), getString(R.string.newpost_posting));
-		}
-		
-		protected void onPostExecute(Pair<String, String> result)
-    	{
-			hideBusy();
-    		if (result.first.equals("OK"))
-    		{
-    			showMsg("posted");
-    			setResult(RESULT_OK);
-    			finish();
-    		} else {
-    			showMsg("Error: " + result.second);
-    		}
-    	}	
+		new NewPostTask(new NewPostListener() {
+			@Override
+			protected void onPreExecute() {
+				showBusy(getString(R.string.please_wait), getString(R.string.newpost_posting));
+			}
+			@Override
+			protected void onPostExecute(NewPostArg arg, Object result)
+			{
+				hideBusy();
+				showMsg(getString(R.string.posted));
+				setResult(RESULT_OK);
+				finish();
+			}
+			@Override
+			protected void onException(NewPostArg arg, Exception e) {
+				hideBusy();
+				showMsg(getString(R.string.error_with_msg) + Exceptions.getErrorMsg(e));
+			}
+		}).execute(new NewPostArg(basePath, token, args));
 	}
 	
     void showBusy(String title, String msg) {

@@ -66,4 +66,6 @@
     <string name="userinfo_updated">User info updated</string>
     <string name="userinfo_update_fail">Fail to update user info</string>
     <string name="newpost_posting">Posting&#8230;</string>
+    <string name="please_input_post_title">Please input title</string>
+    <string name="posted">Posted.</string>
 </resources>

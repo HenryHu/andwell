@@ -1,23 +1,15 @@
 package net.henryhu.andwell;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,6 +22,7 @@ public class BoardListFragment extends ListFragment {
 	ArrayAdapter<BoardItem> adapter;
 	String basePath;
 	BoardListener listener = null;
+	String token;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +33,7 @@ public class BoardListFragment extends ListFragment {
         setListAdapter(adapter);
         
 		basePath = pref.getString("server_api", "");
+		token = pref.getString("token", "");
         loadBoards();
     }
     
@@ -78,150 +72,44 @@ public class BoardListFragment extends ListFragment {
     	String mode = getArguments().getString("mode");
     	if (mode.equals("BOARDS"))
     	{
-    		new LoadBoardsTask().execute(0);
+    		new LoadBoardsTask(new MyLoadBoardsListener()).execute(new BasicArg(basePath, token));
     	} else if (mode.equals("FAVBOARDS"))
     	{
-    		new LoadFavBoardsTask().execute(0);
+    		new LoadFavBoardsTask(new MyLoadBoardsListener()).execute(new BasicArg(basePath, token));
     	}
     }
 
-    private class LoadBoardsTask extends AsyncTask<Integer, Integer, String> {
-    	protected String doInBackground(Integer... dummy)
-    	{
-    		RequestArgs args = new RequestArgs(pref.getString("token", ""));
-    		args.add("count", "100000");
-    		
-    		try {
-    			HttpResponse resp = Utils.doGet(basePath, "/board/list", args.getValue());
-    			Pair<String, String> result = Utils.parseResult(resp);
-    			if (result.first.equals("OK"))
-    			{
-    				String ret = Utils.readResp(resp);
-    				JSONArray obj = null;
-    				try {
-    					obj = new JSONArray(ret);
-    					for (int i=0; i<obj.length(); i++)
-    					{
-    						JSONObject board = obj.getJSONObject(i);
-    						boardslist.add(new BoardItem(board));
-    						publishProgress(i);
-    					}
-    					return "OK";
-    				} catch (JSONException e)
-    				{
-    					return "JSON parse error: " + e.getMessage();
-    				}
-    			} else {
-    				return result.second;
-    			}
-    		}
-    		catch (IOException e)
-    		{
-    			return "IOException " + e.getMessage();
-    		}
-    	}
-    	
+    class MyLoadBoardsListener extends LoadBoardsListener {
+    	@Override
     	protected void onPreExecute()
     	{
     		Log.d("BoardListFragment", "LoadBoards: PreExec");
     		loadDialog = ProgressDialog.show(myAct, getString(R.string.please_wait), getString(R.string.loading_boards));
     	}
-    	
-    	protected void onProgressUpdate(Integer... progress)
+    	@Override
+    	protected void onProgressUpdate(LoadBoardsProgress progress)
     	{
     		if (loadDialog != null)
-    			loadDialog.setMessage("Loaded " + progress[0] + " boards");
+    			loadDialog.setMessage("Loaded " + progress.count + " boards");
+			boardslist.add(progress.board);
+			adapter.notifyDataSetChanged();
     	}
-    	
-    	protected void onPostExecute(String result)
+    	@Override
+    	protected void onPostExecute(BasicArg arg, String result)
     	{
     		Log.d("BoardListFragment", "LoadBoards: PostExec");
     		if (loadDialog != null)
     			loadDialog.dismiss();
-    		if (result.equals("OK"))
-    		{
-    			adapter.notifyDataSetChanged();
-    		} else {
-    			Utils.showToast(myAct, getString(R.string.fail_to_load_boards) + result);
-    		}
+   			adapter.notifyDataSetChanged();
     	}
-    }
-
-    private class LoadFavBoardsTask extends AsyncTask<Integer, Integer, String> {
-    	protected String doInBackground(Integer... dummy)
-    	{
-    		RequestArgs args = new RequestArgs(pref.getString("token", ""));
-    		args.add("count", "100000");
-    		
-    		try {
-    			HttpResponse resp = Utils.doGet(basePath, "/favboard/list", args.getValue());
-    			Pair<String, String> result = Utils.parseResult(resp);
-    			if (result.first.equals("OK"))
-    			{
-    				String ret = Utils.readResp(resp);
-    				JSONArray obj = null;
-    				try {
-    					obj = new JSONArray(ret);
-    					for (int i=0; i<obj.length(); i++)
-    					{
-    						JSONObject fboard = obj.getJSONObject(i);
-    						String type = fboard.getString("type");
-    						if (type.equals("board"))
-    						{
-    							JSONObject board = null;
-    							try {
-    								board = fboard.getJSONObject("binfo");
-    								if (board == null)
-    									throw new JSONException("no board info");
-    								BoardItem item = new BoardItem(board);
-    								boardslist.add(item);
-    							} catch (JSONException e)
-    							{
-    								Log.w("AndWell", "failed to load favboard #" + i);
-    							}
-    						}
-    						publishProgress(i);
-    					}
-    					return "OK";
-    				} catch (JSONException e)
-    				{
-    					return "JSON parse error: " + e.getMessage();
-    				}
-    			} else {
-    				return result.second;
-    			}
-    		}
-    		catch (IOException e)
-    		{
-    			return "IOException " + e.getMessage();
-    		}
-    	}
-    	
-    	protected void onPreExecute()
-    	{
-    		loadDialog = ProgressDialog.show(myAct, getString(R.string.please_wait), getString(R.string.loading_boards));
-    	}
-    	
-    	protected void onProgressUpdate(Integer... progress)
-    	{
-    		if (loadDialog != null)
-    			loadDialog.setMessage("Loaded " + progress[0] + " boards");
-    	}
-    	
-    	protected void onPostExecute(String result)
-    	{
+    	@Override
+    	protected void onException(BasicArg arg, Exception e) {
     		if (loadDialog != null)
     			loadDialog.dismiss();
-    		if (result.equals("OK"))
-    		{
-    			adapter.notifyDataSetChanged();
-    		} else {
-    			Utils.showToast(myAct, getString(R.string.fail_to_load_boards) + result);
-    		}
+			Utils.showToast(myAct, getString(R.string.fail_to_load_boards) + Exceptions.getErrorMsg(e));    		
     	}
     }
-    
-    
+    	
     @Override
     public void onDestroy()
     {

@@ -1,13 +1,7 @@
 package net.henryhu.andwell;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -15,14 +9,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
-import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -34,7 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener {
+public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener, BusyListener {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	List<PostItem> postslist = new ArrayList<PostItem>();
@@ -49,6 +41,8 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
 	String basePath;
 	boolean loaded = false;
 	PostListener listener = null;
+	String token;
+	String board;
 	
 	interface PostListener {
 		public void onPostSelected(PostItem post);
@@ -74,6 +68,8 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
         setHasOptionsMenu(true);
         
 		basePath = pref.getString("server_api", "");
+		token = pref.getString("token", "");
+		board = pref.getString("board", "test");
        	loaded = false;
     }
     
@@ -97,12 +93,12 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     			Utils.showToast(myAct, getString(R.string.already_first_post)); 
     		} else {
     			postslist.remove(postslist.size() - 1);
-    			new LoadPostsTask().execute(0, 20, end);
+    			new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, 0, 20, end));
     		}
     	} else if (item.id() == PostItem.ID_UPDATE)
     	{
     		if (postslist.size() >= 3)
-    			new LoadPostsTask().execute(postslist.get(1).id() + 1, 20, 0, 0);
+    			new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, postslist.get(1).id() + 1, 20, 0, 0));
     		else
     			loadPosts(0, 20, 0, 0);
     	} else {
@@ -188,7 +184,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     
     void newPost() {
     	Intent intent = new Intent(myAct, NewPostActivity.class);
-    	intent.putExtra("board", pref.getString("board", "test"));
+    	intent.putExtra("board", board);
     	startActivityForResult(intent, ACTION_POST);
     }
     
@@ -197,118 +193,69 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	loaded = true;
     	postslist.clear();
         postslist.add(new PostItem(PostItem.ID_UPDATE));
-    	new LoadPostsTask().execute(start, count, end, -1, selectid);
+    	new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, start, count, end, -1, selectid));
     }
 
-    private class LoadPostsTask extends AsyncTask<Integer, Integer, String> {
-    	private String errMsg = "";
-    	private int selectid = 0;
-    	protected String doInBackground(Integer... arg)
-    	{
-    		RequestArgs args = new RequestArgs(pref.getString("token", ""));
-    		int insertpos = -1; // -1: tail 0:head
-    		args.add("name", pref.getString("board", "test"));
-    		if (arg.length > 0)
-    			args.add("start", String.valueOf(arg[0]));
-    		if (arg.length > 1)
-    			if (!arg[1].equals(0))
-    			args.add("count", String.valueOf(arg[1]));
-    		if (arg.length > 2)
-    			if (!arg[2].equals(0))
-    				args.add("end", String.valueOf(arg[2]));
-    		if (arg.length > 3)
-    			insertpos = arg[3];
-    		if (arg.length > 4)
-    			selectid = arg[4];
-    		
-    		if (insertpos == 0)
-    			errMsg = getString(R.string.no_more_post);
-    		
-    		try {
-    			HttpResponse resp = Utils.doGet(basePath, "/board/post_list", args.getValue());
-    			Pair<String, String> result = Utils.parseResult(resp);
-    			if (result.first.equals("OK"))
-    			{
-    				String ret = Utils.readResp(resp);
-    				
-    				JSONArray obj = null;
-    				try {
-    					obj = new JSONArray(ret);
-    					int cnt = 0;
-    					for (int i=obj.length() - 1; i>=0; i--)
-    					{
-    						JSONObject post = obj.getJSONObject(i);
-    						PostItem item = new PostItem(post);
-    						if (insertpos == -1)
-    							postslist.add(item);
-    						else
-    							postslist.add(obj.length() - i, item);
-    						cnt++;
-    						publishProgress(cnt);
-    					}
-    					if (insertpos == -1)
-    						postslist.add(new PostItem(PostItem.ID_MORE));
-    					return "OK";
-    				} catch (JSONException e)
-    				{
-    					return "JSON parse error: " + e.getMessage();
-    				}
-    			} else {
-    				return result.first;
-    			}
-    		}
-    		catch (IOException e)
-    		{
-    			return "IOException " + e.getMessage();
-    		}
-    	}
-    	
+    class MyLoadPostsListener extends LoadPostsListener {
+    	@Override
     	protected void onPreExecute()
     	{
     		Log.d("PostListFragment", "LoadPosts: PreExec");
     		showBusy(getString(R.string.please_wait), getString(R.string.loading_posts));
     	}
     	
-    	protected void onProgressUpdate(Integer... progress)
+    	@Override
+    	protected void onProgressUpdate(LoadPostsProgress progress)
     	{
-    		updateBusy("Loaded " + progress[0] + " posts");
+    		if (progress.insertpos == -1)
+    			postslist.add(progress.item);
+    		else
+    			postslist.add(progress.insertpos, progress.item);
+    		adapter.notifyDataSetChanged();
+    		updateBusy("Loaded " + progress.count + " posts");
     	}
     	
-    	protected void onPostExecute(String result)
+    	@Override
+    	protected void onPostExecute(LoadPostsArg arg, String result)
     	{
     		Log.d("PostListFragment", "LoadPosts: PostExec");
     		hideBusy();
-			adapter.notifyDataSetChanged();
-    		if (result.equals("OK"))
+    		adapter.notifyDataSetChanged();
+    		if (arg.selectid != 0)
     		{
-    			if (selectid != 0)
+    			for (int i=0; i<postslist.size(); i++)
     			{
-    				for (int i=0; i<postslist.size(); i++)
+    				if (postslist.get(i).id() == arg.selectid)
     				{
-    					if (postslist.get(i).id() == selectid)
-    					{
-    						getListView().setSelection(i);
-    						break;
-    					}
+    					getListView().setSelection(i);
+    					break;
     				}
     			}
-    		} else {
-    			if (errMsg.equals("")) {
-       				loaded = false;
-    				errMsg = "failed to load posts: " + result;
-    			}
-    			Utils.showToast(myAct, errMsg);
     		}
     	}
+    	
+    	@Override
+    	protected void onException(LoadPostsArg arg, Exception e) {
+    		hideBusy();
+    		String errMsg;
+			if (arg.insertpos == 0)
+				errMsg = getString(R.string.no_more_post);
+			
+			else {
+   				loaded = false;
+				errMsg = getString(R.string.fail_to_load_posts) + Exceptions.getErrorMsg(e);
+			}
+			Utils.showToast(myAct, errMsg);
+		}
     }
     
     public void updatePostItem(int position)
     {
-    	new updatePostItemTask().execute(position, postslist.get(position).id());
+    	new UpdatePostItemTask(new MyUpdatePostItemListener()).execute(new UpdatePostItemArg(basePath, token, board, position, postslist.get(position).id()));
     }
     
     public void doReply(long id, boolean rmode) {
-    	RequestArgs args = new RequestArgs(pref.getString("token", ""));
+    	RequestArgs args = new RequestArgs(token);
     	args.add("id", postslist.get((int) id).id());
     	args.add("xid", postslist.get((int) id).xid());
     	args.add("board", pref.getString("board", ""));
@@ -316,7 +263,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		args.add("mode", "R");
     	else
     		args.add("mode", "S");
-    	new QuotePostTask().execute(args);
+    	new QuotePostTask(new MyQuotePostListener(this, this)).execute(new QuotePostArg(basePath, args));
     }
     
     public int getFirstPost() {
@@ -333,111 +280,21 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		return 0;    	
     }
     
-    private class QuotePostTask extends AsyncTask<RequestArgs, String, Pair<String, Object>> {
-    	RequestArgs args;
-		@Override
-		protected Pair<String, Object> doInBackground(RequestArgs... arg0) {
-			args = arg0[0];
-			try {
-    			HttpResponse resp = Utils.doGet(basePath, "/post/quote", args.getValue());
-    			Pair<String, String> ret = Utils.parseResult(resp);
-    			if (ret.first.equals("OK")) {
-    				String res = Utils.readResp(resp);
-    				JSONObject obj = new JSONObject(res);
-   					return new Pair<String, Object>("OK", obj);
-    			}
-    			return new Pair<String, Object>("Error", ret.second);
-    		}
-    		catch (IOException e)
-    		{
-    			return new Pair<String, Object>("IOException" + e.getMessage(), "");
-    		} catch (JSONException e) {
-    			return new Pair<String, Object>("JSON parse error", e.getMessage());
-			}
-		}
-		protected void onPreExecute() {
-			showBusy(getString(R.string.please_wait), getString(R.string.quoting_post));
-		}
-		protected void onPostExecute(Pair<String, Object> result)
+    class MyUpdatePostItemListener extends UpdatePostItemListener {
+    	@Override
+    	protected void onPostExecute(UpdatePostItemArg arg, PostItem item)
     	{
-			hideBusy();
-    		if (result.first.equals("OK"))
-    		{
-    	    	try {
-    	    		JSONObject obj = (JSONObject)result.second;
-    	    		Intent intent = new Intent(myAct, NewPostActivity.class);
-    	    		intent.putExtra("board", pref.getString("board", "test"));
-    	    		intent.putExtra("re_id", args.getInt("id"));
-    	    		intent.putExtra("re_xid", args.getInt("xid"));
-    	    		intent.putExtra("title", obj.getString("title"));
-    	    		intent.putExtra("content", 
-    	    			((args.getString("mode").equals("R") ? "" : 
-    	    				"\nSent from AndWell\n") + obj.getString("content")));
-    	    		startActivityForResult(intent, ACTION_REPLY);
-    	    	} catch (JSONException e) {
-    	    		Utils.showToast(myAct, getString(R.string.illegal_reply));
-    	    	}    			
-    		} else {
-    			Utils.showToast(myAct, result.first + ": " + result.second.toString());
-    		}
+   			postslist.set(arg.position, item);
+    		adapter.notifyDataSetChanged();
     	}
-    }
-    
-    private class updatePostItemTask extends AsyncTask<Integer, Integer, Pair<String, Object>> {
-    	private String errMsg = "";
-    	private int position;
-    	private int postid;
-    	protected Pair<String, Object> doInBackground(Integer... arg)
-    	{
-    		RequestArgs args = new RequestArgs(pref.getString("token", ""));
-    		args.add("name", pref.getString("board", "test"));
-    		position = arg[0];
-    		postid = arg[1];
-   			args.add("start", String.valueOf(postid));
-   			args.add("count", "1");
-    		
-    		try {
-    			HttpResponse resp = Utils.doGet(basePath, "/board/post_list", args.getValue());
-    			Pair<String, String> result = Utils.parseResult(resp);
-    			if (result.first.equals("OK"))
-    			{
-    				String ret = Utils.readResp(resp);
-    				
-    				JSONArray obj = null;
-    				try {
-    					obj = new JSONArray(ret);
-    					JSONObject post = obj.getJSONObject(0);
-
-    					return new Pair<String, Object>("OK", new PostItem(post));
-    				} catch (JSONException e)
-    				{
-    					return new Pair<String, Object>("JSON parse error", e.getMessage());
-    				}
-    			} else {
-    				return new Pair<String, Object>("Request error", result.second);
-    			}
-    		}
-    		catch (IOException e)
-    		{
-    			return new Pair<String, Object>("IOException", e.getMessage());
-    		}
-    	}
-    	
-    	protected void onPostExecute(Pair<String, Object> result)
-    	{
-    		if (result.first.equals("OK"))
-    		{
-    			postslist.set(position, (PostItem)result.second);
-    			adapter.notifyDataSetChanged();
-    		} else {
-    			if (errMsg.equals(""))
-    				errMsg = getString(R.string.fail_to_load_posts) + result.first + " : " + result.second;
-    			Utils.showToast(myAct, errMsg);
-    		}
+    	@Override
+    	protected void onException(UpdatePostItemArg arg, Exception e) {
+    		String errMsg = getString(R.string.fail_to_load_posts) + Exceptions.getErrorMsg(e);
+			Utils.showToast(myAct, errMsg);
     	}
     }
 
-    void showBusy(String title, String msg) {
+    public void showBusy(String title, String msg) {
     	if (busyDialog != null)
     		busyDialog.dismiss();
     	
@@ -449,7 +306,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
 			busyDialog.setMessage(msg);
     }
     
-    void hideBusy() {
+    public void hideBusy() {
 		if (busyDialog != null) {
 			busyDialog.dismiss();
 			busyDialog = null;

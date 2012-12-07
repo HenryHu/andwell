@@ -30,7 +30,6 @@ import org.apache.http.params.HttpParams;
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Pair;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -142,11 +141,12 @@ public class Utils {
 		}
 	}
 	
-	public static Pair<String, String> parseResult(HttpResponse resp) {
+	public static void checkResult(HttpResponse resp)
+			throws NotFoundException, OutOfRangeException, ServerErrorException {
 		int respCode = resp.getStatusLine().getStatusCode();
 		if (respCode == 200)
 		{
-			return new Pair<String, String>("OK", "");
+			return;
 		} else {
 			HttpEntity ent = resp.getEntity();
 			if (ent != null) {
@@ -157,11 +157,11 @@ public class Utils {
 				}
 			}
 			if (respCode == 404)
-				return new Pair<String, String>("NO MORE", resp.getStatusLine().getReasonPhrase());
+				throw new NotFoundException(resp.getStatusLine().getReasonPhrase());
 			if (respCode == 416)
-				return new Pair<String, String>("OUT OF RANGE", resp.getStatusLine().getReasonPhrase());
+				throw new OutOfRangeException(resp.getStatusLine().getReasonPhrase());
 			else
-				return new Pair<String, String>(resp.getStatusLine().getReasonPhrase(), resp.getStatusLine().getReasonPhrase());
+				throw new ServerErrorException(resp.getStatusLine().getReasonPhrase());
 		}
 	}
 	

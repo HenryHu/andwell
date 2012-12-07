@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import android.os.Handler;
 import android.util.Base64;
-import android.util.Pair;
 
 public class Auth {
 	static Thread startThread(final Runnable runnable)
@@ -107,37 +106,38 @@ public class Auth {
 			handler.post(new IOExceptionRunnable(ctx, e));
 			return false;
 		}
-		Pair<String, String> result = Utils.parseResult(resp);
-		if (!result.first.equals("OK"))
-		{
-			final String reason = result.second;
+		try {
+			Utils.checkResult(resp);
+		} catch (Exception e) {
+			final String reason = Exceptions.getErrorMsg(e);
 			handler.post(new AuthFailRunnable(ctx, reason));
 			return false;
-		} else {
+		}
+		
+		try {
+			String ret = Utils.readResp(resp);
+			JSONObject obj = null;
 			try {
-				String ret = Utils.readResp(resp);
-				JSONObject obj = null;
-				try {
-					obj = new JSONObject(ret);
-					if (obj.getString("status").equals("ok"))
-					{
-						handler.post(new AuthOKRunnable(ctx, token));
-						return true;
-					}
-					handler.post(new AuthFailRunnable(ctx, obj.getString("status")));
-					return false;
-				} catch (final JSONException e)
+				obj = new JSONObject(ret);
+				if (obj.getString("status").equals("ok"))
 				{
-					handler.post(new AuthParseRunnable(ctx, e));
-					return false;
+					handler.post(new AuthOKRunnable(ctx, token));
+					return true;
 				}
-			}
-			catch (final IOException e)
+				handler.post(new AuthFailRunnable(ctx, obj.getString("status")));
+				return false;
+			} catch (final JSONException e)
 			{
-				handler.post(new IOExceptionRunnable(ctx, e));
+				handler.post(new AuthParseRunnable(ctx, e));
 				return false;
 			}
 		}
+		catch (final IOException e)
+		{
+			handler.post(new IOExceptionRunnable(ctx, e));
+			return false;
+		}
+
 	}
 	
 	public static boolean oauth(String basePath, String code, Handler handler, AuthHandler ctx)
