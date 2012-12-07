@@ -306,6 +306,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	}
     }
     
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
     	if (requestCode == ACTION_POST || requestCode == ACTION_REPLY) {
     		if (resultCode == Activity.RESULT_OK) {

@@ -74,12 +74,6 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
 	}
 	
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (postlistFrag != null)
-			postlistFrag.onActivityResult(requestCode, resultCode, data);
-	}
-
-	@Override
 	public void onPostView(int post_id, int post_xid) {
 		if (postlistFrag != null)
 			postlistFrag.onPostView(post_id, post_xid);

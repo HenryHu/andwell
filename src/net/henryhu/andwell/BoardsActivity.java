@@ -70,11 +70,5 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
 			intent.putExtra("board", pref.getString("board", ""));
 			startActivityForResult(intent, PostListFragment.ACTION_VIEW);
 		}
-	}
-	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (postlistFrag != null)
-			postlistFrag.onActivityResult(requestCode, resultCode, data);
-	}
+	}	
 }
