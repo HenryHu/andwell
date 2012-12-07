@@ -35,23 +35,47 @@ abstract class BasicTask<TArg, U, TRet> extends AsyncTask<TArg, U, TRet> {
 	
 	@Override
 	protected void onPreExecute() {
-		listener.onPreExecute();
+		try {
+			listener.onPreExecute();
+		} catch (IllegalStateException e) {
+			// Usually this is caused by detached fragments
+			// But in onPreExecute()... This is really rare
+			// XXX: Anyway, this is just a workaround
+			Log.w(this.getClass().getName().toString() + "." + "onPreExecute", "IllegalStateException: ignore");
+			Log.w(this.getClass().getName().toString() + "." + "onPreExecute", e.toString());
+		}
 	}
 	
 	@Override
 	protected void onProgressUpdate(U... progress) {
-		if (progress.length > 0)
-			listener.onProgressUpdate(progress[0]);
-		else
-			listener.onProgressUpdate(null);
+		try {
+			if (progress.length > 0)
+				listener.onProgressUpdate(progress[0]);
+			else
+				listener.onProgressUpdate(null);
+		} catch (IllegalStateException e) {
+			// Usually this is caused by detached fragments
+			// Since it's detached... We may just ignore the progress
+			// XXX: Anyway, this is just a workaround
+			Log.w(this.getClass().getName().toString() + "." + "onProgressUpdate", "IllegalStateException: ignore");
+			Log.w(this.getClass().getName().toString() + "." + "onProgressUpdate", e.toString());
+		}
 	}
 	
 	@Override
 	protected void onPostExecute(TRet result) {
-		if (exception == null)
-			listener.onPostExecute(arg, result);
-		else
-			listener.onException(arg, exception);
+		try {
+			if (exception == null)
+				listener.onPostExecute(arg, result);
+			else
+				listener.onException(arg, exception);
+		} catch (IllegalStateException e) {
+			// Usually this is caused by detached fragments
+			// Since it's detached... We may just ignore the result
+			// XXX: Anyway, this is just a workaround
+			Log.w(this.getClass().getName().toString() + "." + "onPostExecute", "IllegalStateException: ignore");
+			Log.w(this.getClass().getName().toString() + "." + "onPostExecute", e.toString());
+		}
 	}
 	
 	protected abstract TRet work(TArg arg) throws Exception;
