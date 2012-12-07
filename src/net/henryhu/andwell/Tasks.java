@@ -259,7 +259,7 @@ class LoadPostsArg extends BasicArg {
 	int start;
 	int count;
 	int end;
-	int insertpos;
+	int insertpos; // -1: tail 0:head
 	int selectid;
 	LoadPostsArg(String basePath, String token, String board, int start, int count, int end) {
 		this(basePath, token, board, start, count, end, -1);
@@ -296,7 +296,6 @@ class LoadPostsTask extends BasicTask<LoadPostsArg, LoadPostsProgress, String> {
 	protected String work(LoadPostsArg arg) throws Exception
 	{
 		RequestArgs args = new RequestArgs(arg.token);
-		int insertpos = -1; // -1: tail 0:head
 		args.add("name", arg.board);
 		if (arg.start != 0)
 			args.add("start", String.valueOf(arg.start));
@@ -316,12 +315,12 @@ class LoadPostsTask extends BasicTask<LoadPostsArg, LoadPostsProgress, String> {
 			JSONObject post = obj.getJSONObject(i);
 			PostItem item = new PostItem(post);
 			cnt++;
-			if (insertpos == -1)
+			if (arg.insertpos == -1)
 				publishProgress(new LoadPostsProgress(cnt, -1, item));
 			else
 				publishProgress(new LoadPostsProgress(cnt, obj.length() - i, item));
 		}
-		if (insertpos == -1)
+		if (arg.insertpos == -1)
 			publishProgress(new LoadPostsProgress(cnt, -1, new PostItem(PostItem.ID_MORE)));
 		return "OK";
 	}
