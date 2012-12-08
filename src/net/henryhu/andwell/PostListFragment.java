@@ -331,10 +331,8 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		ArrayList<Integer> post_viewed = data.getExtras().getIntegerArrayList("post_viewed");
     		if (post_viewed != null) {
     			for (int v_xid : post_viewed) {
-    				Log.d("PostList", "to mark viewed: " + v_xid);
     				for (int i=0; i<postslist.size(); i++) {
     					if (postslist.get(i).xid() == v_xid) {
-    						Log.d("PostList", "mark viewed: " + v_xid);
     						postslist.get(i).setRead(true);
     						break;
     					}

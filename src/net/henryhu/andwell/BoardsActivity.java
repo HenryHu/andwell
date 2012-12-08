@@ -31,6 +31,7 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
         }
 	}
 	
+	@Override
 	public void onBoardSelected(BoardItem board) {
 		Editor edit = pref.edit();
 		edit.putString("board", board.title);

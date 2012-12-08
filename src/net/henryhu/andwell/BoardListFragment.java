@@ -54,7 +54,7 @@ public class BoardListFragment extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		BoardItem item = (BoardItem)l.getItemAtPosition(position);
-		((BoardListener)getActivity()).onBoardSelected(item);
+		listener.onBoardSelected(item);
 		
 		item.setRead(true);
 		adapter.notifyDataSetChanged();

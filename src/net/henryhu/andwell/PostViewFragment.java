@@ -125,7 +125,7 @@ public class PostViewFragment extends Fragment {
     	bNext.setOnClickListener(new ThreadClickListener(true));
     	
     	OnTouchListener detectGesture = new OnTouchListener() {
-
+    		@Override
 			public boolean onTouch(View v, MotionEvent event) {
 		    	return gestures.onTouchEvent(event);
 			}
@@ -157,6 +157,7 @@ public class PostViewFragment extends Fragment {
     		_only_new = only_new;
     	}
     	
+    	@Override
 		public void onClick(View arg0) {
     		new LoadNextPostTask(new MyLoadNextPostListener()).execute(new LoadNextPostArg(token, basePath, board, post_id, _forward, _last_one, _only_new));
     	}
@@ -175,16 +176,17 @@ public class PostViewFragment extends Fragment {
 		}
 		else
 			LoadPost(new_post_id);
-
     }
     
     class MyLoadNextPostListener extends LoadNextPostListener {
+    	@Override
     	protected void onPreExecute()
     	{
     		busy.show(getString(R.string.please_wait), getString(R.string.loading_next_post));
     	}
     	
-    	protected void onProgressUpdate(Integer... progress)
+    	@Override
+    	protected void onProgressUpdate(Integer progress)
     	{
     		busy.update(getString(R.string.got_next_post_id));
     	}
