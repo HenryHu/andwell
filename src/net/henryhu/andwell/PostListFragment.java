@@ -242,10 +242,13 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		String errMsg;
 			if (arg.insertpos == 0)
 				errMsg = getString(R.string.no_more_post);
-			
 			else {
    				loaded = false;
 				errMsg = getString(R.string.fail_to_load_posts) + Exceptions.getErrorMsg(e);
+			}
+			if (arg.insertpos == -1) {
+				postslist.add(new PostItem(PostItem.ID_MORE));
+				adapter.notifyDataSetChanged();
 			}
 			Utils.showToast(myAct, errMsg);
 		}
