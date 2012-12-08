@@ -17,7 +17,7 @@ public class PostViewActivity extends FragmentActivity implements PostViewFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         pref = getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
-
+        post_viewed = new ArrayList<Integer>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.postview_act);
         if (savedInstanceState == null) {
