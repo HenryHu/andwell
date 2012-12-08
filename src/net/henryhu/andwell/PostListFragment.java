@@ -93,6 +93,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     			Utils.showToast(myAct, getString(R.string.already_first_post)); 
     		} else {
     			postslist.remove(postslist.size() - 1);
+    			adapter.notifyDataSetChanged();
     			new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, 0, 20, end));
     		}
     	} else if (item.id() == PostItem.ID_UPDATE)
@@ -193,6 +194,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	loaded = true;
     	postslist.clear();
         postslist.add(new PostItem(PostItem.ID_UPDATE));
+        adapter.notifyDataSetChanged();
     	new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, start, count, end, -1, selectid));
     }
 
