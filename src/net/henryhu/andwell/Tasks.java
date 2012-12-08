@@ -221,9 +221,11 @@ class QuotePostTask extends BasicTask<QuotePostArg, String, JSONObject> {
 class MyQuotePostListener extends QuotePostListener {
 	Fragment context;
 	BusyDialog busy;
-	MyQuotePostListener(Fragment context, BusyDialog busy) {
+	int requestCode;
+	MyQuotePostListener(Fragment context, BusyDialog busy, int requestCode) {
 		this.context = context;
 		this.busy = busy;
+		this.requestCode = requestCode;
 	}
 	@Override
 	protected void onPreExecute() {
@@ -242,7 +244,7 @@ class MyQuotePostListener extends QuotePostListener {
 			intent.putExtra("content", 
 					((arg.requestArgs.getString("mode").equals("R") ? "" : 
 							"\nSent from AndWell\n") + obj.getString("content")));
-			context.startActivityForResult(intent, PostListFragment.ACTION_REPLY);
+			context.startActivityForResult(intent, requestCode);
 		} catch (JSONException e) {
 			Utils.showToast(context.getActivity(), context.getString(R.string.illegal_reply));
 		}    			

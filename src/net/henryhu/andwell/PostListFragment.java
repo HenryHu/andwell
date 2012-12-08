@@ -271,7 +271,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		args.add("mode", "R");
     	else
     		args.add("mode", "S");
-    	new QuotePostTask(new MyQuotePostListener(this, busy)).execute(new QuotePostArg(basePath, args));
+    	new QuotePostTask(new MyQuotePostListener(this, busy, ACTION_REPLY)).execute(new QuotePostArg(basePath, args));
     }
     
     public int getFirstPost() {
@@ -312,6 +312,10 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     			break;
     		}
     	}
+    }
+    
+    public void onPostReply() {
+    	loadPosts(0, 20, 0, 0);
     }
     
     @Override

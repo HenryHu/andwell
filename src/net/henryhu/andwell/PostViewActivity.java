@@ -37,6 +37,12 @@ public class PostViewActivity extends FragmentActivity implements PostViewFragme
 		updateResult();
 	}
 	
+	@Override
+	public void onPostReply() {
+		// just ignore it
+		// maybe we will mark this in the result someday
+	}
+	
     private void updateResult() {
     	Intent data = new Intent(this, PostViewActivity.class);
     	Bundle extras = new Bundle();

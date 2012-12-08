@@ -2,6 +2,7 @@ package net.henryhu.andwell;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -42,9 +43,11 @@ public class PostViewFragment extends Fragment {
 	float FLING_MIN_SPEED = 0.1f;
 	Activity myAct = null;
 	PostViewListener listener = null;
+	static final int ACTION_REPLY = 1;
 	
 	interface PostViewListener {
 		public void onPostView(int post_id, int post_xid);
+		public void onPostReply();
 	}
 	
 	@Override
@@ -336,7 +339,7 @@ public class PostViewFragment extends Fragment {
     	args.add("xid", post_xid);
     	args.add("board", board);
     	args.add("mode", mode);
-    	new QuotePostTask(new MyQuotePostListener(this, busy)).execute(new QuotePostArg(basePath, args));
+    	new QuotePostTask(new MyQuotePostListener(this, busy, ACTION_REPLY)).execute(new QuotePostArg(basePath, args));
     }
     
     public int getPostId() { return post_id; }
@@ -352,5 +355,12 @@ public class PostViewFragment extends Fragment {
     {
     	super.onDestroy();
     	busy.hide();
+    }
+    
+    @Override
+    public void onActivityResult(int request, int result, Intent data) {
+    	if (request == ACTION_REPLY)
+    		if (result == Activity.RESULT_OK)
+    			listener.onPostReply();
     }
 }

@@ -99,6 +99,12 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
 		updateResult();
 	}
 	
+	@Override
+	public void onPostReply() {
+		if (postlistFrag != null)
+			postlistFrag.onPostReply();
+	}
+	
     private void updateResult() {
     	Intent data = new Intent(this, PostListActivity.class);
     	Bundle extras = new Bundle();
