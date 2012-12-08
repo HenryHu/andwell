@@ -68,4 +68,5 @@
     <string name="newpost_posting">Posting&#8230;</string>
     <string name="please_input_post_title">Please input title</string>
     <string name="posted">Posted.</string>
+    <string name="loading_post">Loading post&#8230;</string>
 </resources>

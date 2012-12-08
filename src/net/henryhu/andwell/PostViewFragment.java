@@ -239,7 +239,7 @@ public class PostViewFragment extends Fragment {
     		protected void onPreExecute()
     		{
     			Log.d("PostViewFragment", "LoadPost: PreExec");
-    			busy.show("Please wait", "Loading post...");
+    			busy.show(getString(R.string.please_wait), getString(R.string.loading_post));
     		}
     		
     		@Override
