@@ -313,30 +313,36 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
                 loadPosts(0, 20, 0, 0);
     		}
     	} else if (requestCode == ACTION_VIEW) {
-    		int post_id = data.getExtras().getInt("id");
-    		int post_xid = data.getExtras().getInt("xid");
-    		if (!loaded || postslist.size() < 3 || postslist.get(1).id() < post_id 
-    				|| postslist.get(postslist.size() - 2).id() > post_id) {
-            	int startid = post_id - 10;
-            	if (startid < 1)
-            		startid = 1;
+    		onPostsViewed(resultCode, data);
+    	}
+    }
+    
+    public void onPostsViewed(int result, Intent data) {
+		int post_id = data.getExtras().getInt("id");
+		int post_xid = data.getExtras().getInt("xid");
+		if (!loaded || postslist.size() < 3 || postslist.get(1).id() < post_id 
+				|| postslist.get(postslist.size() - 2).id() > post_id) {
+        	int startid = post_id - 10;
+        	if (startid < 1)
+        		startid = 1;
 
-        		loadPosts(startid, 20, 0, post_id);
-        	} else {
-        		ArrayList<Integer> post_viewed = data.getExtras().getIntegerArrayList("post_viewed");
-        		if (post_viewed != null) {
-        			for (int v_xid : post_viewed) {
-        				for (int i=0; i<postslist.size(); i++) {
-        					if (postslist.get(i).xid() == v_xid) {
-        						postslist.get(i).setRead(true);
-        						break;
-        					}
-        				}
-        			}
-        			adapter.notifyDataSetChanged();
-        		}
-        		onPostView(post_id, post_xid);
-        	}
+    		loadPosts(startid, 20, 0, post_id);
+    	} else {
+    		ArrayList<Integer> post_viewed = data.getExtras().getIntegerArrayList("post_viewed");
+    		if (post_viewed != null) {
+    			for (int v_xid : post_viewed) {
+    				Log.d("PostList", "to mark viewed: " + v_xid);
+    				for (int i=0; i<postslist.size(); i++) {
+    					if (postslist.get(i).xid() == v_xid) {
+    						Log.d("PostList", "mark viewed: " + v_xid);
+    						postslist.get(i).setRead(true);
+    						break;
+    					}
+    				}
+    			}
+    			adapter.notifyDataSetChanged();
+    		}
+    		onPostView(post_id, post_xid);
     	}
     }
     

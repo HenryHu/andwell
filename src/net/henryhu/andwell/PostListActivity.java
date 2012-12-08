@@ -16,6 +16,7 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
 	private PostViewFragment postviewFrag = null;
 	int last_post_id, last_post_xid;
 	ArrayList<Integer> post_viewed;
+	static final int ACTION_VIEW_POST = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +76,16 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
 			intent.putExtra("id", post.id());
 			intent.putExtra("xid", post.xid());
 			intent.putExtra("board", pref.getString("board", ""));
-			startActivityForResult(intent, PostListFragment.ACTION_VIEW);
+			startActivityForResult(intent, ACTION_VIEW_POST);
 		}
+	}
+	
+	@Override
+	public void onActivityResult(int request, int result, Intent intent) {
+		if (request == ACTION_VIEW_POST) {
+			postlistFrag.onPostsViewed(result, intent);
+		}
+		super.onActivityResult(request, result, intent);
 	}
 	
 	@Override

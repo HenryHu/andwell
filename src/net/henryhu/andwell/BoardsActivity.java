@@ -11,6 +11,7 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
 	private SharedPreferences pref = null;
 	PostListFragment postlistFrag = null;
 	BoardListFragment boardlistFrag = null;
+	static final int ACTION_VIEW_POST = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +63,23 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
 				intent.putExtra("last_post", postlistFrag.getLastPost());
 			}
 			intent.putExtra("board", pref.getString("board", ""));
-			startActivityForResult(intent, PostListFragment.ACTION_VIEW);
+			startActivityForResult(intent, ACTION_VIEW_POST);
 		} else {
 			Intent intent = new Intent(this, PostViewActivity.class);
 			intent.putExtra("id", post.id());
 			intent.putExtra("xid", post.xid());
 			intent.putExtra("board", pref.getString("board", ""));
-			startActivityForResult(intent, PostListFragment.ACTION_VIEW);
+			startActivityForResult(intent, ACTION_VIEW_POST);
 		}
-	}	
+	}
+	
+	@Override
+	public void onActivityResult(int request, int result, Intent intent) {
+		if (request == ACTION_VIEW_POST) {
+			if (postlistFrag != null) {
+				postlistFrag.onPostsViewed(result, intent);
+			}
+		}
+		super.onActivityResult(request, result, intent);
+	}
 }
