@@ -332,6 +332,11 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     public void onPostsViewed(int result, Intent data) {
 		int post_id = data.getExtras().getInt("id");
 		int post_xid = data.getExtras().getInt("xid");
+		boolean replied = data.getExtras().getBoolean("replied");
+		if (replied) {
+			loadPosts(0, 20, 0, post_id);
+			return;
+		}
 		if (!loaded || postslist.size() < 3 || postslist.get(1).id() < post_id 
 				|| postslist.get(postslist.size() - 2).id() > post_id) {
         	int startid = post_id - 10;

@@ -13,11 +13,13 @@ public class PostViewActivity extends FragmentActivity implements PostViewFragme
 	private SharedPreferences pref = null;
 	int last_post_id, last_post_xid;
 	ArrayList<Integer> post_viewed;
+	boolean replied;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         pref = getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
         post_viewed = new ArrayList<Integer>();
+        replied = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.postview_act);
         if (savedInstanceState == null) {
@@ -39,8 +41,8 @@ public class PostViewActivity extends FragmentActivity implements PostViewFragme
 	
 	@Override
 	public void onPostReply() {
-		// just ignore it
-		// maybe we will mark this in the result someday
+		replied = true;
+		updateResult();
 	}
 	
     private void updateResult() {
@@ -49,6 +51,7 @@ public class PostViewActivity extends FragmentActivity implements PostViewFragme
     	extras.putInt("id", last_post_id);
     	extras.putInt("xid", last_post_xid);
     	extras.putIntegerArrayList("post_viewed", post_viewed);
+    	extras.putBoolean("replied", replied);
 
     	data.putExtras(extras);
 

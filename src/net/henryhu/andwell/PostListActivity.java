@@ -17,11 +17,13 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
 	int last_post_id, last_post_xid;
 	ArrayList<Integer> post_viewed;
 	static final int ACTION_VIEW_POST = 1;
+	boolean replied;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         pref = getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
         post_viewed = new ArrayList<Integer>();
+        replied = false;
 
         super.onCreate(savedInstanceState);
 		if (useDualPane())
@@ -103,6 +105,8 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
 	public void onPostReply() {
 		if (postlistFrag != null)
 			postlistFrag.onPostReply();
+		replied = true;
+		updateResult();
 	}
 	
     private void updateResult() {
@@ -111,6 +115,7 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
     	extras.putInt("id", last_post_id);
     	extras.putInt("xid", last_post_xid);
     	extras.putIntegerArrayList("post_viewed", post_viewed);
+    	extras.putBoolean("replied", replied);
 
     	data.putExtras(extras);
 
