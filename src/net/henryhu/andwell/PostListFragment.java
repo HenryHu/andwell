@@ -87,15 +87,18 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	PostItem item = (PostItem)parent.getItemAtPosition(position);
     	if (item.id == PostItem.ID_MORE)
     	{
-    		int end = postslist.get(postslist.size() - 2).id() - 1;
-    		if (end == 0)
-    		{
-    			Utils.showToast(myAct, getString(R.string.already_first_post)); 
-    		} else {
-    			postslist.remove(postslist.size() - 1);
-    			adapter.notifyDataSetChanged();
-    			new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, 0, 20, end));
-    		}
+    		if (postslist.size() > 2) {
+    			int end = postslist.get(postslist.size() - 2).id() - 1;
+    			if (end == 0)
+    			{
+    				Utils.showToast(myAct, getString(R.string.already_first_post)); 
+    			} else {
+    				postslist.remove(postslist.size() - 1);
+    				adapter.notifyDataSetChanged();
+    				new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, 0, 20, end));
+    			}
+    		} else
+    			loadPosts(0, 20, 0, 0);
     	} else if (item.id() == PostItem.ID_UPDATE)
     	{
     		if (postslist.size() >= 3)
