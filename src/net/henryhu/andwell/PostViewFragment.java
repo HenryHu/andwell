@@ -277,7 +277,6 @@ public class PostViewFragment extends Fragment {
 			errMsg = getString(R.string.no_more_post);
 		} else {
 			errMsg = getString(R.string.fail_to_load_post) + Exceptions.getErrorMsg(e);
-			Utils.showToast(myAct, errMsg);
 		}
 		Utils.showToast(myAct, errMsg);
     }
