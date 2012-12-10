@@ -36,6 +36,7 @@
         android:layout_weight="1"
         android:gravity="top"
         android:inputType="textMultiLine"
+        android:layerType="software"
         android:text="" />
 
     <LinearLayout
