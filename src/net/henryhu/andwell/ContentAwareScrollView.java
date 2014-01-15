@@ -5,12 +5,11 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ScrollView;
 
 public class ContentAwareScrollView extends ScrollView {
 	private GestureDetector mGestureDetector;
-    View.OnTouchListener mGestureListener;
+//    View.OnTouchListener mGestureListener;
     boolean intercept = true;
 
     public ContentAwareScrollView(Context context, AttributeSet attrs) {

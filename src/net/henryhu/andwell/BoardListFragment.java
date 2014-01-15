@@ -54,6 +54,7 @@ public class BoardListFragment extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		BoardItem item = (BoardItem)l.getItemAtPosition(position);
+        assert item != null;
 		listener.onBoardSelected(item);
 		
 		item.setRead(true);
@@ -70,6 +71,7 @@ public class BoardListFragment extends ListFragment {
     void loadBoards()
     {
     	String mode = getArguments().getString("mode");
+        assert mode != null;
     	if (mode.equals("BOARDS"))
     	{
     		new LoadBoardsTask(new MyLoadBoardsListener()).execute(new BasicArg(basePath, token));

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener {
@@ -35,8 +33,6 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
 	public static final int ACTION_POST = 1;
 	public static final int ACTION_REPLY = 2;
 	public static final int ACTION_VIEW = 3;
-	Dialog inputDialog = null;
-	EditText tValue = null;
 	String basePath;
 	boolean loaded = false;
 	PostListener listener = null;
@@ -85,6 +81,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     public void onListItemClick(ListView parent, View view,
     		int position, long id) {
     	PostItem item = (PostItem)parent.getItemAtPosition(position);
+        assert item != null;
     	if (item.id == PostItem.ID_MORE)
     	{
     		if (postslist.size() > 2) {
@@ -156,6 +153,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        assert info != null;
         switch (item.getItemId()) {
             case R.id.mReply_PostList:
             	doReply(info.id, false);
@@ -256,11 +254,13 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
 			Utils.showToast(myAct, errMsg);
 		}
     }
-    
+
+    /*
     public void updatePostItem(int position)
     {
     	new UpdatePostItemTask(new MyUpdatePostItemListener()).execute(new UpdatePostItemArg(basePath, token, board, position, postslist.get(position).id()));
     }
+    */
     
     public void doReply(long id, boolean rmode) {
     	RequestArgs args = new RequestArgs(token);
@@ -287,7 +287,8 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     	else
     		return 0;    	
     }
-    
+
+    /*
     class MyUpdatePostItemListener extends UpdatePostItemListener {
     	@Override
     	protected void onPostExecute(UpdatePostItemArg arg, PostItem item)
@@ -301,6 +302,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
 			Utils.showToast(myAct, errMsg);
     	}
     }
+    */
 
     public void onPostView(int post_id, int post_xid) {
     	for (int i=0; i<postslist.size(); i++) {
@@ -330,6 +332,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     }
     
     public void onPostsViewed(int result, Intent data) {
+        assert data.getExtras() != null;
 		int post_id = data.getExtras().getInt("id");
 		int post_xid = data.getExtras().getInt("xid");
 		boolean replied = data.getExtras().getBoolean("replied");
@@ -348,12 +351,12 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		ArrayList<Integer> post_viewed = data.getExtras().getIntegerArrayList("post_viewed");
     		if (post_viewed != null) {
     			for (int v_xid : post_viewed) {
-    				for (int i=0; i<postslist.size(); i++) {
-    					if (postslist.get(i).xid() == v_xid) {
-    						postslist.get(i).setRead(true);
-    						break;
-    					}
-    				}
+                    for (PostItem post : postslist) {
+                        if (post.xid() == v_xid) {
+                            post.setRead(true);
+                            break;
+                        }
+                    }
     			}
     			adapter.notifyDataSetChanged();
     		}

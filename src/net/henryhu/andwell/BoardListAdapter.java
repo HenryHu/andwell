@@ -20,14 +20,15 @@ public class BoardListAdapter extends ArrayAdapter<BoardItem> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		BoardItem item = getItem(position);
-		View target = null;
+		View target;
 		if (convertView != null) {
 			target = convertView;
 		} else {
 			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			target = vi.inflate(R.layout.boardlist_entry, null);
 		}
-		
+
+        assert target != null;
 		TextView name_view = (TextView)target.findViewById(R.id.boardlist_entry_name);
 		name_view.setText(item.title);
 		TextView postinfo_view = (TextView)target.findViewById(R.id.boardlist_entry_postinfo);

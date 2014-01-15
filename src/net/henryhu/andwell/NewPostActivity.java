@@ -48,7 +48,8 @@ public class NewPostActivity extends Activity {
         anony_in = (CheckBox)findViewById(R.id.newpost_anony);
         post_btn = (Button)findViewById(R.id.newpost_post);
         cancel_btn = (Button)findViewById(R.id.newpost_cancel);
-        
+
+        assert getIntent().getExtras() != null;
         String title = getIntent().getExtras().getString("title");
         if (title != null)
         	title_in.setText(title);
@@ -66,10 +67,13 @@ public class NewPostActivity extends Activity {
         QmdAdapter adapter = new QmdAdapter(this, 0, qmds);
         qmd_in.setAdapter(adapter);
         
-        for (int i = 0; i < qmd_in.getCount(); i++)
-        	if (((QmdSelection)qmd_in.getItemAtPosition(i)).id().equals(
-        			pref.getString("qmd_id", String.valueOf(QmdSelection.NONE_ID))))
-        		qmd_in.setSelection(i);
+        for (int i = 0; i < qmd_in.getCount(); i++) {
+            QmdSelection qmd_i = (QmdSelection)qmd_in.getItemAtPosition(i);
+            assert qmd_i != null;
+            if (qmd_i.id().equals(
+                    pref.getString("qmd_id", String.valueOf(QmdSelection.NONE_ID))))
+                qmd_in.setSelection(i);
+        }
         
         post_btn.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -110,12 +114,16 @@ public class NewPostActivity extends Activity {
 	}
 	
 	void doPost() {
+        assert title_in.getText() != null;
+        assert content_in.getText() != null;
 		String title = title_in.getText().toString();
 		String content = content_in.getText().toString();
 		int anony = anony_in.isChecked() ? 1 : 0;
 		int sig_id = 0;
-		
-		if (!((QmdSelection)qmd_in.getSelectedItem()).isNoneItem())
+
+        QmdSelection qmd_selected = ((QmdSelection)qmd_in.getSelectedItem());
+        assert qmd_selected != null;
+		if (!qmd_selected.isNoneItem())
 			try {
 				sig_id = Integer.parseInt(((QmdSelection)qmd_in.getSelectedItem()).id());
 			} catch (Exception e) {
@@ -126,7 +134,7 @@ public class NewPostActivity extends Activity {
 			return;
 		}
 		pref.edit().putString("qmd_id", ((QmdSelection)qmd_in.getSelectedItem()).id()).commit();
-		
+
 		int re_id = this.getIntent().getExtras().getInt("re_id");
 		int re_xid = this.getIntent().getExtras().getInt("re_xid");
 		String board = this.getIntent().getExtras().getString("board");
@@ -173,6 +181,7 @@ public class NewPostActivity extends Activity {
     }
 	
 	void showMsg(String msg) {
+        assert getApplicationContext() != null;
 		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 	}
 	
@@ -204,15 +213,17 @@ public class NewPostActivity extends Activity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			QmdSelection item = this.getItem(position);
-			View target = null;
-			TextView idView = null;
+			View target;
+			TextView idView;
 			if (convertView != null) {
 				target = convertView;
 			} else {
 				LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				target = vi.inflate(R.layout.newpost_qmd_selection, null);
 			}
+            assert target != null;
 			idView = (TextView)target.findViewById(R.id.newpost_qmd_num);
+            assert post_btn.getTextColors() != null;
 			if (convertView == null)
 				idView.setTextColor(post_btn.getTextColors().getDefaultColor());
 			if (item.isRandomItem()) {

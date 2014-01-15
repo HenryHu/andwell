@@ -53,13 +53,14 @@ public class Main extends ListActivity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			MainMenuItem item = this.getItem(position);
-			View target = null;
+			View target;
 			if (convertView != null) {
 				target = convertView;
 			} else {
 				LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				target = vi.inflate(R.layout.mainmenu, null);
 			}
+            assert target != null;
 			TextView title = (TextView)target.findViewById(R.id.mainmenu_title);
 			title.setText(getString(item.getTitleResId()));
 			return target;

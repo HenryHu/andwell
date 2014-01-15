@@ -25,6 +25,7 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
         if (savedInstanceState == null) {
         	boardlistFrag = new BoardListFragment();
         	Bundle bundle = new Bundle();
+            assert getIntent().getExtras() != null;
         	bundle.putString("mode", getIntent().getExtras().getString("boardlist_mode"));
         	boardlistFrag.setArguments(bundle);
         	getSupportFragmentManager().beginTransaction().replace(R.id.boardlist, boardlistFrag).commit();

@@ -50,6 +50,7 @@ public class InputDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.inputdialog, container, false);
+        assert v != null;
 
         getDialog().setTitle(title);
     	TextView text = (TextView) v.findViewById(R.id.tPrompt_inputdialog);
@@ -61,6 +62,7 @@ public class InputDialogFragment extends DialogFragment {
     	bOK.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 //                ((InputDialogListener)getActivity()).onInputOK(tValue.getText().toString());
+                assert tValue.getText() != null;
                 listener.onInputOK(type, tValue.getText().toString());
                 dismiss();
 			}

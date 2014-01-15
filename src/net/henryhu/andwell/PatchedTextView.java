@@ -19,6 +19,7 @@ public class PatchedTextView extends TextView {
 		try{
 			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		}catch (IndexOutOfBoundsException e){
+            assert getText() != null;
 			setText(getText().toString());
 			super.onMeasure(widthMeasureSpec, heightMeasureSpec); 
 		}
@@ -28,6 +29,7 @@ public class PatchedTextView extends TextView {
 		try{
 			super.setGravity(gravity);
 		}catch (IndexOutOfBoundsException e){
+            assert getText() != null;
 			setText(getText().toString());
 			super.setGravity(gravity); 
 		}

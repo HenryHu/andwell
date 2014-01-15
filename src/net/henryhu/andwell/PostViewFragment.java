@@ -27,7 +27,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class PostViewFragment extends Fragment {
-	private SharedPreferences pref = null;
 	TextView tContent = null;
 	TextView tQMD = null;
 	Button bPrev = null, bNext = null, bUp = null, bDown = null;
@@ -65,7 +64,7 @@ public class PostViewFragment extends Fragment {
         super.onCreate(savedInstanceState);
         myAct = getActivity();
         busy = new BusyDialog(myAct);
-        pref = myAct.getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
+        SharedPreferences pref = myAct.getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
         setHasOptionsMenu(true);
        
 		basePath = pref.getString("server_api", "");
@@ -114,6 +113,7 @@ public class PostViewFragment extends Fragment {
     	if (container == null)
     		return null;
     	View contentView = inflater.inflate(R.layout.postview, container, false);
+        assert contentView != null;
     	tContent = (TextView)contentView.findViewById(R.id.tContent);
     	tQMD = (TextView)contentView.findViewById(R.id.tQMD);
     	bPrev = (Button)contentView.findViewById(R.id.bPrev_PostView);
@@ -167,7 +167,7 @@ public class PostViewFragment extends Fragment {
     }
     
     void switchPost(boolean up) {
-		int delta = 0;
+		int delta;
 		if (up)
 			delta = -1;
 		else
@@ -233,7 +233,7 @@ public class PostViewFragment extends Fragment {
 		public void onClick(View arg0) {
 			switchPost(_up);
 		}
-    };
+    }
 
     void LoadPost(int post_id_to_load)
     {

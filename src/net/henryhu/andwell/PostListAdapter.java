@@ -22,7 +22,7 @@ public class PostListAdapter extends ArrayAdapter<PostItem> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		PostItem item = getItem(position);
-		View target = null;
+		View target;
 		if (convertView != null) {
 			target = convertView;
 		} else {
@@ -30,7 +30,8 @@ public class PostListAdapter extends ArrayAdapter<PostItem> {
 			target = vi.inflate(R.layout.postlist_entry, null);
 		}
 
-		TextView idView = ((TextView)target.findViewById(R.id.postlist_entry_id));
+        assert target != null;
+        TextView idView = ((TextView)target.findViewById(R.id.postlist_entry_id));
 		TextView readView = ((TextView)target.findViewById(R.id.postlist_entry_read));
 		TextView authorView = ((TextView)target.findViewById(R.id.postlist_entry_author)); 
 		TextView timeView = ((TextView)target.findViewById(R.id.postlist_entry_time));

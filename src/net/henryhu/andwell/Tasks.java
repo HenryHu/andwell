@@ -10,10 +10,6 @@ import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-public class Tasks {
-	
-}
-
 class TaskListener<TArg, U, TRet> {
 	protected void onPreExecute() { }
 	protected void onProgressUpdate(U progress) { }
@@ -24,9 +20,7 @@ class TaskListener<TArg, U, TRet> {
 }
 
 abstract class BasicTask<TArg, U, TRet> extends AsyncTask<TArg, U, TRet> {
-	class Listener extends TaskListener<TArg, U, TRet> {}
 	TaskListener<TArg, U, TRet> listener;
-	TRet result;
 	TArg arg = null;
 	Exception exception = null;
 	BasicTask(TaskListener<TArg, U, TRet> _listener) {
@@ -41,8 +35,8 @@ abstract class BasicTask<TArg, U, TRet> extends AsyncTask<TArg, U, TRet> {
 			// Usually this is caused by detached fragments
 			// But in onPreExecute()... This is really rare
 			// XXX: Anyway, this is just a workaround
-			Log.w(this.getClass().getName().toString() + "." + "onPreExecute", "IllegalStateException: ignore");
-			Log.w(this.getClass().getName().toString() + "." + "onPreExecute", e.toString());
+			Log.w(this.getClass().getName() + "." + "onPreExecute", "IllegalStateException: ignore");
+			Log.w(this.getClass().getName() + "." + "onPreExecute", e.toString());
 		}
 	}
 	
@@ -57,8 +51,8 @@ abstract class BasicTask<TArg, U, TRet> extends AsyncTask<TArg, U, TRet> {
 			// Usually this is caused by detached fragments
 			// Since it's detached... We may just ignore the progress
 			// XXX: Anyway, this is just a workaround
-			Log.w(this.getClass().getName().toString() + "." + "onProgressUpdate", "IllegalStateException: ignore");
-			Log.w(this.getClass().getName().toString() + "." + "onProgressUpdate", e.toString());
+			Log.w(this.getClass().getName() + "." + "onProgressUpdate", "IllegalStateException: ignore");
+			Log.w(this.getClass().getName() + "." + "onProgressUpdate", e.toString());
 		}
 	}
 	
@@ -73,8 +67,8 @@ abstract class BasicTask<TArg, U, TRet> extends AsyncTask<TArg, U, TRet> {
 			// Usually this is caused by detached fragments
 			// Since it's detached... We may just ignore the result
 			// XXX: Anyway, this is just a workaround
-			Log.w(this.getClass().getName().toString() + "." + "onPostExecute", "IllegalStateException: ignore");
-			Log.w(this.getClass().getName().toString() + "." + "onPostExecute", e.toString());
+			Log.w(this.getClass().getName() + "." + "onPostExecute", "IllegalStateException: ignore");
+			Log.w(this.getClass().getName() + "." + "onPostExecute", e.toString());
 		}
 	}
 	
@@ -135,8 +129,7 @@ class LoadPostTask extends BasicTask<LoadPostArg, Integer, LoadPostResult> {
 
 		HttpResponse resp = Utils.doGet(arg.basePath, "/post/view", args.getValue());
 		Utils.checkResult(resp);
-		JSONObject obj = null;
-		obj = new JSONObject(Utils.readResp(resp));
+		JSONObject obj = new JSONObject(Utils.readResp(resp));
 
 		String content = obj.getString("content");
 		int new_post_xid = obj.getInt("xid"); 
@@ -185,8 +178,7 @@ class LoadNextPostTask extends BasicTask<LoadNextPostArg, Integer, LoadNextPostR
 		HttpResponse resp = Utils.doGet(arg.basePath, "/post/nextid", args.getValue());
 		Utils.checkResult(resp);
 		String reply = Utils.readResp(resp);
-		JSONObject obj = null;
-		obj = new JSONObject(reply);
+		JSONObject obj = new JSONObject(reply);
 		int nextid = obj.getInt("nextid");
 		publishProgress();
 		return new LoadNextPostResult(nextid);
@@ -213,8 +205,7 @@ class QuotePostTask extends BasicTask<QuotePostArg, String, JSONObject> {
 		HttpResponse resp = Utils.doGet(args.basePath, "/post/quote", args.requestArgs.getValue());
 		Utils.checkResult(resp);
 		String res = Utils.readResp(resp);
-		JSONObject obj = new JSONObject(res);
-		return obj;
+		return new JSONObject(res);
 	}
 }
 
@@ -310,8 +301,7 @@ class LoadPostsTask extends BasicTask<LoadPostsArg, LoadPostsProgress, String> {
 		Utils.checkResult(resp);
 		String ret = Utils.readResp(resp);
 
-		JSONArray obj = null;
-		obj = new JSONArray(ret);
+		JSONArray obj = new JSONArray(ret);
 		int cnt = 0;
 		for (int i=obj.length() - 1; i>=0; i--) {
 			JSONObject post = obj.getJSONObject(i);
@@ -340,11 +330,9 @@ class LoadUserInfoTask extends BasicTask<BasicArg, Object, Integer> {
 		HttpResponse resp = Utils.doGet(arg.basePath, "/user/detail", args.getValue());
 		Utils.checkResult(resp);
 
-		JSONObject obj = null;
-		obj = new JSONObject(Utils.readResp(resp));
+		JSONObject obj = new JSONObject(Utils.readResp(resp));
 
-		int sig_count = obj.getInt("signum");
-		return sig_count;
+		return obj.getInt("signum");
 	}
 }
 
@@ -394,8 +382,7 @@ class LoadBoardsTask extends BasicTask<BasicArg, LoadBoardsProgress, String> {
 		HttpResponse resp = Utils.doGet(arg.basePath, "/board/list", args.getValue());
 		Utils.checkResult(resp);
 		String ret = Utils.readResp(resp);
-		JSONArray obj = null;
-		obj = new JSONArray(ret);
+		JSONArray obj = new JSONArray(ret);
 		for (int i=0; i<obj.length(); i++)
 		{
 			JSONObject board = obj.getJSONObject(i);
@@ -418,15 +405,14 @@ class LoadFavBoardsTask extends BasicTask<BasicArg, LoadBoardsProgress, String> 
 		HttpResponse resp = Utils.doGet(arg.basePath, "/favboard/list", args.getValue());
 		Utils.checkResult(resp);
 		String ret = Utils.readResp(resp);
-		JSONArray obj = null;
-		obj = new JSONArray(ret);
+		JSONArray obj = new JSONArray(ret);
 		for (int i=0; i<obj.length(); i++)
 		{
 			JSONObject fboard = obj.getJSONObject(i);
 			String type = fboard.getString("type");
 			if (type.equals("board"))
 			{
-				JSONObject board = null;
+				JSONObject board;
 				try {
 					board = fboard.getJSONObject("binfo");
 					if (board == null)
@@ -472,8 +458,7 @@ class UpdatePostItemTask extends BasicTask<UpdatePostItemArg, Integer, PostItem>
 		Utils.checkResult(resp);
 		String ret = Utils.readResp(resp);
 
-		JSONArray obj = null;
-		obj = new JSONArray(ret);
+		JSONArray obj = new JSONArray(ret);
 		JSONObject post = obj.getJSONObject(0);
 
 		return new PostItem(post);

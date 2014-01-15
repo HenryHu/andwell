@@ -41,6 +41,7 @@ public class PostListActivity extends FragmentActivity implements PostListFragme
 		}
         
         if (useDualPane()) {
+            assert getIntent().getExtras() != null;
 			showPost(getIntent().getExtras().getInt("post_id"), getIntent().getExtras().getInt("post_xid"));
         }
 	}
