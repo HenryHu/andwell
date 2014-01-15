@@ -3,18 +3,13 @@ package net.henryhu.andwell;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Handler;
-import android.util.Base64;
 
 public class Auth {
 	static Thread startThread(final Runnable runnable)
@@ -43,7 +38,7 @@ public class Auth {
 		{
 			ctx.onAuthIOException(e);
 		}
-	};
+	}
 	
 	static class AuthFailRunnable implements Runnable {
 		AuthHandler ctx;
@@ -59,7 +54,7 @@ public class Auth {
 		{
 			ctx.onAuthFail(reason);
 		}
-	};
+	}
 	
 	static class AuthOKRunnable implements Runnable {
 		AuthHandler ctx;
@@ -75,7 +70,7 @@ public class Auth {
 		{
 			ctx.onAuthOK(token);
 		}
-	};
+	}
 	
 	static class AuthParseRunnable implements Runnable {
 		AuthHandler ctx;
@@ -91,13 +86,13 @@ public class Auth {
 		{
 			ctx.onAuthParseException(e);
 		}
-	};
+	}
 	
 	public static boolean reauth(String basePath, String token, Handler handler, AuthHandler ctx)
 	{
 		RequestArgs args = new RequestArgs(token);
 		
-		HttpResponse resp = null;
+		HttpResponse resp;
 		try {
 			resp = Utils.doGet(basePath, "/session/verify", args.getValue());
 		}
@@ -116,7 +111,7 @@ public class Auth {
 		
 		try {
 			String ret = Utils.readResp(resp);
-			JSONObject obj = null;
+			JSONObject obj;
 			try {
 				obj = new JSONObject(ret);
 				if (obj.getString("status").equals("ok"))
@@ -149,7 +144,7 @@ public class Auth {
 		args.add("code", code);
 		args.add("redirect_uri", Utils.getOAuthRedirectURI(basePath));
 		
-		HttpResponse resp = null;
+		HttpResponse resp;
 		try {
 			resp = Utils.doGet(basePath, "/auth/token", args.getValue());
 		}
@@ -167,7 +162,7 @@ public class Auth {
 			try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
 				String ret = br.readLine();
-				JSONObject obj = null;
+				JSONObject obj;
 				try {
 					obj = new JSONObject(ret);
 					final String token = obj.getString("access_token");
@@ -187,7 +182,8 @@ public class Auth {
 		}
 
 	}
-	
+
+    /*
 	public static boolean auth(String name, String pass, Handler handler,
 			final AuthHandler ctx, final String basePath)
 	{
@@ -196,7 +192,7 @@ public class Auth {
 		params.add(new BasicNameValuePair("user", name));
 		params.add(new BasicNameValuePair("pass", epwd));
 
-		HttpResponse resp = null;
+		HttpResponse resp;
 		try {
 			resp = Utils.doPost(basePath, "/auth/pwauth", params);
 		}
@@ -214,7 +210,7 @@ public class Auth {
 			try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
 				String ret = br.readLine();
-				JSONObject obj = null;
+				JSONObject obj;
 				try {
 					obj = new JSONObject(ret);
 					final String token = obj.getString("access_token");
@@ -233,8 +229,8 @@ public class Auth {
 			}
 		}
 	}
-	
-	static Thread doAuth(final String name, final String pass, 
+
+	static Thread doAuth(final String name, final String pass,
 			final Handler handler, final AuthHandler ctx, final String basePath)
 	{
 		Runnable runnable = new Runnable() {
@@ -244,6 +240,7 @@ public class Auth {
 		};
 		return startThread(runnable);
 	}
+	*/
 	
 	static Thread doOAuth(String code, Handler handler, AuthHandler ctx, String basePath)
 	{
