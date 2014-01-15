@@ -49,7 +49,7 @@ public class Utils {
 	}
 
 	public static HttpClient getNewHttpClient() {
-		HttpClient result = null;
+		HttpClient result;
 	    try {
 	        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
 	        trustStore.load(null, null);
@@ -84,7 +84,7 @@ public class Utils {
 		if (debug)
 			Log.d("get path", basePath + path + "?" + args);
 
-		HttpResponse resp = null;
+		HttpResponse resp;
 		synchronized(clientLock) {
 			if (client == null) {
 				client = getNewHttpClient();
@@ -105,7 +105,7 @@ public class Utils {
 		catch (UnsupportedEncodingException e)	{ }
 		ent.setContentType(URLEncodedUtils.CONTENT_TYPE);
 		post.setEntity(ent);
-		HttpResponse resp = null;
+		HttpResponse resp;
 		synchronized(clientLock) {
 			if (client == null) {
 				client = getNewHttpClient();
@@ -144,10 +144,8 @@ public class Utils {
 	public static void checkResult(HttpResponse resp)
 			throws NotFoundException, OutOfRangeException, ServerErrorException {
 		int respCode = resp.getStatusLine().getStatusCode();
-		if (respCode == 200)
+		if (respCode != 200)
 		{
-			return;
-		} else {
 			HttpEntity ent = resp.getEntity();
 			if (ent != null) {
 				try {
@@ -184,13 +182,8 @@ public class Utils {
 	    // XXX: shall we depend on the real requirements of both panes?
 	    // XXX: what the hell is this magic number?
 	    // TODO: automatic resize
-	    if (x >= inchLeft + inchRight)
-	    	return true;
-	    else
-	    	return false;
+	    return (x >= inchLeft + inchRight);
 //	    double y = dm.heightPixels/dm.ydpi;
-	    
-	    
 	}
 
 }
