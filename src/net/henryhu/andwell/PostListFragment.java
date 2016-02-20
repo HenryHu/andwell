@@ -40,7 +40,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
 	String board;
 	
 	interface PostListener {
-		public void onPostSelected(PostItem post);
+		void onPostSelected(PostItem post);
 	}
 	
 	@Override
@@ -351,12 +351,12 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		ArrayList<Integer> post_viewed = data.getExtras().getIntegerArrayList("post_viewed");
     		if (post_viewed != null) {
     			for (int v_xid : post_viewed) {
-                    for (PostItem post : postslist) {
-                        if (post.xid() == v_xid) {
-                            post.setRead(true);
-                            break;
-                        }
-                    }
+					for (PostItem post : postslist) {
+						if (post.xid() == v_xid) {
+							post.setRead(true);
+							break;
+						}
+					}
     			}
     			adapter.notifyDataSetChanged();
     		}

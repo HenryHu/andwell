@@ -1,6 +1,5 @@
 package net.henryhu.andwell;
 
-import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +8,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+
+import java.net.HttpURLConnection;
 
 class TaskListener<TArg, U, TRet> {
 	protected void onPreExecute() { }
@@ -127,9 +128,7 @@ class LoadPostTask extends BasicTask<LoadPostArg, Integer, LoadPostResult> {
 		args.add("id", String.valueOf(arg.new_post_id));
 		args.add("board", arg.board);
 
-		HttpResponse resp = Utils.doGet(arg.basePath, "/post/view", args.getValue());
-		Utils.checkResult(resp);
-		JSONObject obj = new JSONObject(Utils.readResp(resp));
+		JSONObject obj = Utils.getJsonResp(arg.basePath, "/post/view", args);
 
 		String content = obj.getString("content");
 		int new_post_xid = obj.getInt("xid"); 
@@ -175,10 +174,8 @@ class LoadNextPostTask extends BasicTask<LoadNextPostArg, Integer, LoadNextPostR
 		if (arg.only_new)
 			args.add("only_new", 1);
 		
-		HttpResponse resp = Utils.doGet(arg.basePath, "/post/nextid", args.getValue());
-		Utils.checkResult(resp);
-		String reply = Utils.readResp(resp);
-		JSONObject obj = new JSONObject(reply);
+		JSONObject obj = Utils.getJsonResp(arg.basePath, "/post/nextid", args);
+
 		int nextid = obj.getInt("nextid");
 		publishProgress();
 		return new LoadNextPostResult(nextid);
@@ -202,10 +199,7 @@ class QuotePostTask extends BasicTask<QuotePostArg, String, JSONObject> {
 	
 	@Override
 	protected JSONObject work(QuotePostArg args) throws Exception {
-		HttpResponse resp = Utils.doGet(args.basePath, "/post/quote", args.requestArgs.getValue());
-		Utils.checkResult(resp);
-		String res = Utils.readResp(resp);
-		return new JSONObject(res);
+		return Utils.getJsonResp(arg.basePath, "/post/quote", args.requestArgs);
 	}
 }
 
@@ -297,11 +291,7 @@ class LoadPostsTask extends BasicTask<LoadPostsArg, LoadPostsProgress, String> {
 		if (arg.end != 0)
 				args.add("end", String.valueOf(arg.end));
 		
-		HttpResponse resp = Utils.doGet(arg.basePath, "/board/post_list", args.getValue());
-		Utils.checkResult(resp);
-		String ret = Utils.readResp(resp);
-
-		JSONArray obj = new JSONArray(ret);
+		JSONArray obj = Utils.getJsonArrayResp(arg.basePath, "/board/post_list", args);
 		int cnt = 0;
 		for (int i=obj.length() - 1; i>=0; i--) {
 			JSONObject post = obj.getJSONObject(i);
@@ -327,10 +317,7 @@ class LoadUserInfoTask extends BasicTask<BasicArg, Object, Integer> {
 	protected Integer work(BasicArg arg) throws Exception {
 		RequestArgs args = new RequestArgs(arg.token);
 		
-		HttpResponse resp = Utils.doGet(arg.basePath, "/user/detail", args.getValue());
-		Utils.checkResult(resp);
-
-		JSONObject obj = new JSONObject(Utils.readResp(resp));
+		JSONObject obj = Utils.getJsonResp(arg.basePath, "/user/detail", args);
 
 		return obj.getInt("signum");
 	}
@@ -351,7 +338,7 @@ class NewPostTask extends BasicTask<NewPostArg, String, Object> {
 	}
 	@Override
 	protected Object work(NewPostArg arg) throws Exception {
-		HttpResponse resp = Utils.doPost(arg.basePath, "/post/new", arg.args.getValue());
+		HttpURLConnection resp = Utils.doPost(arg.basePath, "/post/new", arg.args);
 		Utils.checkResult(resp);
 		Utils.readResp(resp);
 
@@ -379,10 +366,7 @@ class LoadBoardsTask extends BasicTask<BasicArg, LoadBoardsProgress, String> {
 		RequestArgs args = new RequestArgs(arg.token);
 		args.add("count", "100000");
 		
-		HttpResponse resp = Utils.doGet(arg.basePath, "/board/list", args.getValue());
-		Utils.checkResult(resp);
-		String ret = Utils.readResp(resp);
-		JSONArray obj = new JSONArray(ret);
+		JSONArray obj = Utils.getJsonArrayResp(arg.basePath, "/board/list", args);
 		for (int i=0; i<obj.length(); i++)
 		{
 			JSONObject board = obj.getJSONObject(i);
@@ -402,10 +386,7 @@ class LoadFavBoardsTask extends BasicTask<BasicArg, LoadBoardsProgress, String> 
 		RequestArgs args = new RequestArgs(arg.token);
 		args.add("count", "100000");
 
-		HttpResponse resp = Utils.doGet(arg.basePath, "/favboard/list", args.getValue());
-		Utils.checkResult(resp);
-		String ret = Utils.readResp(resp);
-		JSONArray obj = new JSONArray(ret);
+		JSONArray obj = Utils.getJsonArrayResp(arg.basePath, "/favboard/list", args);
 		for (int i=0; i<obj.length(); i++)
 		{
 			JSONObject fboard = obj.getJSONObject(i);
@@ -415,8 +396,9 @@ class LoadFavBoardsTask extends BasicTask<BasicArg, LoadBoardsProgress, String> 
 				JSONObject board;
 				try {
 					board = fboard.getJSONObject("binfo");
-					if (board == null)
+					if (board == null) {
 						throw new JSONException("no board info");
+					}
 					BoardItem item = new BoardItem(board);
 					publishProgress(new LoadBoardsProgress(i, item));
 				} catch (JSONException e)
@@ -454,11 +436,7 @@ class UpdatePostItemTask extends BasicTask<UpdatePostItemArg, Integer, PostItem>
 		args.add("start", String.valueOf(arg.postid));
 		args.add("count", "1");
 
-		HttpResponse resp = Utils.doGet(arg.basePath, "/board/post_list", args.getValue());
-		Utils.checkResult(resp);
-		String ret = Utils.readResp(resp);
-
-		JSONArray obj = new JSONArray(ret);
+		JSONArray obj = Utils.getJsonArrayResp(arg.basePath, "/board/post_list", args);
 		JSONObject post = obj.getJSONObject(0);
 
 		return new PostItem(post);

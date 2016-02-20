@@ -1,37 +1,17 @@
 package net.henryhu.andwell;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.security.KeyStore;
-import java.util.List;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Utils {
 	public static final String PREFS_FILE = "MainPref";
@@ -39,31 +19,25 @@ public class Utils {
 	public static final int connTimeoutMs = 20000;
 	public static boolean debug = false;
 	
-	static Object clientLock = new Object();
-	static HttpClient client = null;
+//	static Object clientLock = new Object();
+//	static HttpClient client = null;
 
 	public static String getOAuthRedirectURI(String basePath)
 	{
 		return "andwell://andwell/oauth_redirect";
-//		return basePath + "/auth/displaycode";
 	}
 
+	/*
 	public static HttpClient getNewHttpClient() {
 		HttpClient result;
 	    try {
-	        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-	        trustStore.load(null, null);
-
-	        SSLSocketFactory sf = new UnsafeSSLSocketFactory(trustStore);
-	        sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
 	        HttpParams params = new BasicHttpParams();
 		    HttpConnectionParams.setConnectionTimeout(params, connTimeoutMs);
 		    HttpConnectionParams.setSoTimeout(params, soTimeoutMs);
 
 	        SchemeRegistry registry = new SchemeRegistry();
 	        registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-	        registry.register(new Scheme("https", sf, 8080));
+	        registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 8080));
 
 	        ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
 
@@ -73,16 +47,28 @@ public class Utils {
 	    }
 	    return result;
 	}
+	*/
 
-	public static HttpResponse doGet(String basePath, String path, List<NameValuePair> params)
+	public static HttpURLConnection doGet(String basePath, String path, RequestArgs params)
 	throws IOException 
 	{
-		String args = URLEncodedUtils.format(params, "UTF-8");
-		
+		String args = params.getEncodedForm();
+
+		if (debug) {
+			Log.d("get path", basePath + path + "?" + args);
+		}
+
+		URL url = new URL(basePath + path + "?" + args);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setConnectTimeout(connTimeoutMs);
+		conn.setReadTimeout(soTimeoutMs);
+
+		conn.connect();
+		return conn;
+
+		/*
 		HttpGet get = new HttpGet(basePath + path + "?" + args);
 		
-		if (debug)
-			Log.d("get path", basePath + path + "?" + args);
 
 		HttpResponse resp;
 		synchronized(clientLock) {
@@ -92,11 +78,29 @@ public class Utils {
 			resp = client.execute(get);
 		}
 		return resp;
+		*/
 	}
 
-	public static HttpResponse doPost(String basePath, String path, List<NameValuePair> params)
+	public static HttpURLConnection doPost(String basePath, String path, RequestArgs params)
 	throws IOException 
 	{
+		String args = params.getEncodedForm();
+
+		URL url = new URL(basePath + path);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setConnectTimeout(connTimeoutMs);
+		conn.setReadTimeout(soTimeoutMs);
+
+		conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+		conn.setDoOutput(true);
+		conn.setFixedLengthStreamingMode(args.length());
+		OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(conn.getOutputStream()));
+		osw.write(args);
+
+		conn.connect();
+		return conn;
+
+		/*
 		HttpPost post = new HttpPost(basePath + path);
 		StringEntity ent = null;
 		try {
@@ -114,6 +118,7 @@ public class Utils {
 			resp = client.execute(post);
 		}
 		return resp;
+		*/
 	}
 	
 	public static String fillTo(String orig, int target)
@@ -127,7 +132,7 @@ public class Utils {
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			StringBuilder sb = new StringBuilder(1024);
 			char[] buf = new char[1024];
-			int nread = 0;
+			int nread;
 			while ((nread = br.read(buf)) != -1)
 			{
 				sb.append(buf, 0, nread);
@@ -141,30 +146,18 @@ public class Utils {
 		}
 	}
 	
-	public static void checkResult(HttpResponse resp)
-			throws NotFoundException, OutOfRangeException, ServerErrorException {
-		int respCode = resp.getStatusLine().getStatusCode();
-		if (respCode != 200)
-		{
-			HttpEntity ent = resp.getEntity();
-			if (ent != null) {
-				try {
-					ent.getContent().close();
-				} catch (IllegalStateException e) {
-				} catch (IOException e) {
-				}
-			}
-			if (respCode == 404)
-				throw new NotFoundException(resp.getStatusLine().getReasonPhrase());
-			if (respCode == 416)
-				throw new OutOfRangeException(resp.getStatusLine().getReasonPhrase());
-			else
-				throw new ServerErrorException(resp.getStatusLine().getReasonPhrase());
+	public static void checkResult(HttpURLConnection resp)
+			throws IOException, NotFoundException, OutOfRangeException, ServerErrorException {
+		switch (resp.getResponseCode()) {
+			case 200: return;
+			case 404: throw new NotFoundException(resp.getResponseMessage());
+			case 416: throw new OutOfRangeException(resp.getResponseMessage());
+			default: throw new ServerErrorException(resp.getResponseMessage());
 		}
 	}
 	
-	public static String readResp(HttpResponse resp) throws IllegalStateException, IOException {
-		return readAll(resp.getEntity().getContent());
+	public static String readResp(HttpURLConnection resp) throws IllegalStateException, IOException {
+		return readAll(resp.getInputStream());
 	}
 	
 	public static void showToast(Context context, String message) {
@@ -186,4 +179,17 @@ public class Utils {
 //	    double y = dm.heightPixels/dm.ydpi;
 	}
 
+	public static JSONObject getJsonResp(String basePath, String action, RequestArgs params)
+			throws IOException, OutOfRangeException, NotFoundException, ServerErrorException, JSONException {
+		HttpURLConnection conn = doGet(basePath, action, params);
+		checkResult(conn);
+		return new JSONObject(readResp(conn));
+	}
+
+	public static JSONArray getJsonArrayResp(String basePath, String action, RequestArgs params)
+			throws IOException, OutOfRangeException, NotFoundException, ServerErrorException, JSONException {
+		HttpURLConnection conn = doGet(basePath, action, params);
+		checkResult(conn);
+		return new JSONArray(readResp(conn));
+	}
 }

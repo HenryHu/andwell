@@ -27,7 +27,7 @@ public class Main extends ListActivity {
 	
 	static class MainMenuItem {
 		interface MainMenuListener {
-			public void onEnter(Context context);
+			void onEnter(Context context);
 		}
 		
 		MainMenuListener listener;

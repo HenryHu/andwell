@@ -3,9 +3,8 @@ package net.henryhu.andwell;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -92,9 +91,9 @@ public class Auth {
 	{
 		RequestArgs args = new RequestArgs(token);
 		
-		HttpResponse resp;
+		HttpURLConnection resp;
 		try {
-			resp = Utils.doGet(basePath, "/session/verify", args.getValue());
+			resp = Utils.doGet(basePath, "/session/verify", args);
 		}
 		catch (IOException e)
 		{
@@ -144,23 +143,15 @@ public class Auth {
 		args.add("code", code);
 		args.add("redirect_uri", Utils.getOAuthRedirectURI(basePath));
 		
-		HttpResponse resp;
+		HttpURLConnection resp;
 		try {
-			resp = Utils.doGet(basePath, "/auth/token", args.getValue());
-		}
-		catch (IOException e)
-		{
-			handler.post(new IOExceptionRunnable(ctx, e));
-			return false;
-		}
-		if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-		{
-			final String reason = resp.getStatusLine().getReasonPhrase();
-			handler.post(new AuthFailRunnable(ctx, reason));
-			return false;
-		} else {
-			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+			resp = Utils.doGet(basePath, "/auth/token", args);
+			if (resp.getResponseCode() != 200) {
+				final String reason = resp.getResponseMessage();
+				handler.post(new AuthFailRunnable(ctx, reason));
+				return false;
+			} else {
+				BufferedReader br = new BufferedReader(new InputStreamReader(resp.getInputStream()));
 				String ret = br.readLine();
 				JSONObject obj;
 				try {
@@ -174,11 +165,11 @@ public class Auth {
 					return false;
 				}
 			}
-			catch (final IOException e)
-			{
-				handler.post(new IOExceptionRunnable(ctx, e));
-				return false;
-			}
+		}
+		catch (IOException e)
+		{
+			handler.post(new IOExceptionRunnable(ctx, e));
+			return false;
 		}
 
 	}
