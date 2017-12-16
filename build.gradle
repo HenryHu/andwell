@@ -1,60 +1,38 @@
 // This buildscript{} block configures the code driving the build
 buildscript {
-   /**
-    * The nested repositories{} block declares that this build uses the
-    * jcenter repository.
-    */
     repositories {
         jcenter()
         google()
     }
 
-   /**
-    * This block declares a dependency on the 3.0.1 version
-    * of the Gradle plugin for the buildscript.
-    */
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.0'
     }
 }
 
-/**
- * This line applies the com.android.application plugin. Note that you should
- * only apply the com.android.application plugin. Applying the Java plugin as
- * well will result in a build error.
- */
 apply plugin: 'com.android.application'
 
-/**
- * This dependencies block includes any dependencies for the project itself. The
- * following line includes all the JAR files in the libs directory.
- */
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    // Add other library dependencies here (see the next step)
 }
 
-/**
- * The android{} block configures all of the parameters for the Android build.
- * You must provide a value for at least the compilation target.
- */
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     buildToolsVersion '27.0.2'
 
-    /**
-    * This nested sourceSets block points the source code directories to the
-    * existing folders in the project, instead of using the default new
-    * organization.
-    */
     defaultConfig {
         applicationId "net.henryhu.andwell"
         minSdkVersion 8
-        targetSdkVersion 26
+        targetSdkVersion 27
         multiDexEnabled true
         versionCode 20
         versionName "0.3.3"
     }
+    /**
+     * This nested sourceSets block points the source code directories to the
+     * existing folders in the project, instead of using the default new
+     * organization.
+     */
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
