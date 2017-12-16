@@ -12,8 +12,15 @@ buildscript {
 
 apply plugin: 'com.android.application'
 
+allprojects {
+    repositories {
+        google()
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile "com.android.support:support-fragment:27.0.2"
 }
 
 android {
@@ -22,7 +29,7 @@ android {
 
     defaultConfig {
         applicationId "net.henryhu.andwell"
-        minSdkVersion 8
+        minSdkVersion 14
         targetSdkVersion 27
         multiDexEnabled true
         versionCode 20
