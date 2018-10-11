@@ -10,19 +10,21 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 public class PostListActivity extends AppCompatActivity implements PostListFragment.PostListener, PostViewFragment.PostViewListener {
-	private SharedPreferences pref = null;
 	private PostListFragment postlistFrag = null;
 	private PostViewFragment postviewFrag = null;
 	int last_post_id, last_post_xid;
 	ArrayList<Integer> post_viewed;
 	static final int ACTION_VIEW_POST = 1;
 	boolean replied;
+	private String board;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        pref = getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences(Utils.PREFS_FILE, Context.MODE_PRIVATE);
+        board = pref.getString("board", "");
         post_viewed = new ArrayList<Integer>();
         replied = false;
 
@@ -31,7 +33,7 @@ public class PostListActivity extends AppCompatActivity implements PostListFragm
 			setContentView(R.layout.postlist_dual);
 		else
 			setContentView(R.layout.postlist);
-		
+
 		if (savedInstanceState == null) {
 			postlistFrag = new PostListFragment();
 			postlistFrag.setArguments(getIntent().getExtras());
@@ -40,33 +42,35 @@ public class PostListActivity extends AppCompatActivity implements PostListFragm
 			postlistFrag = (PostListFragment)getSupportFragmentManager().findFragmentById(R.id.postlist);
 			postviewFrag = (PostViewFragment)getSupportFragmentManager().findFragmentById(R.id.postlist_right);
 		}
-        
+
         if (useDualPane()) {
             assert getIntent().getExtras() != null;
 			showPost(getIntent().getExtras().getInt("post_id"), getIntent().getExtras().getInt("post_xid"));
-        }
+        } else {
+		    setTitle(board);
+		}
 	}
-	
+
 	public static boolean useDualPane(Context context) {
 		return Utils.useDualPane(context, 2, 3);
 	}
-	
+
 	public boolean useDualPane() {
 		return useDualPane(this);
 	}
-	
+
 	void showPost(int post_id, int post_xid) {
 		if (postviewFrag != null)
 			if (postviewFrag.getPostId() == post_id && postviewFrag.getPostXid() == post_xid)
 				return;
-				
+
 		postviewFrag = new PostViewFragment();
 		Bundle args = new Bundle();
 		args.putInt("id", post_id);
 		args.putInt("xid", post_xid);
-		args.putString("board", pref.getString("board", ""));
+		args.putString("board", board);
 		postviewFrag.setArguments(args);
-		
+
 		FragmentManager fm = getSupportFragmentManager();
 		fm.beginTransaction().replace(R.id.postlist_right, postviewFrag).commit();
 	}
@@ -79,7 +83,7 @@ public class PostListActivity extends AppCompatActivity implements PostListFragm
 			Intent intent = new Intent(this, PostViewActivity.class);
 			intent.putExtra("id", post.id());
 			intent.putExtra("xid", post.xid());
-			intent.putExtra("board", pref.getString("board", ""));
+			intent.putExtra("board", board);
 			startActivityForResult(intent, ACTION_VIEW_POST);
 		}
 	}
@@ -96,7 +100,7 @@ public class PostListActivity extends AppCompatActivity implements PostListFragm
 	public void onPostView(int post_id, int post_xid) {
 		if (postlistFrag != null)
 			postlistFrag.onPostView(post_id, post_xid);
-		setTitle(pref.getString("board", "") + " - " + post_id);
+		setTitle(board + " - " + post_id);
 		last_post_id = post_id;
 		last_post_xid = post_xid;
 		post_viewed.add(post_xid);

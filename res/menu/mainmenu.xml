@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/group1">
-        <item android:id="@+id/item1" android:titleCondensed="FavBoards" android:title="Favourite Boards" android:alphabeticShortcut="f" android:numericShortcut="1"></item>
-        <item android:title="All Boards" android:id="@+id/item2" android:alphabeticShortcut="a" android:titleCondensed="AllBoards" android:numericShortcut="2"></item>
+        <item
+            android:id="@+id/item1"
+            android:alphabeticShortcut="f"
+            android:icon="@android:drawable/btn_star_big_on"
+            android:numericShortcut="1"
+            android:title="@string/favboards"
+            android:titleCondensed="FavBoards"
+            app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/item2"
+            android:alphabeticShortcut="a"
+            android:icon="@android:drawable/ic_dialog_dialer"
+            android:numericShortcut="2"
+            android:title="@string/allboards"
+            android:titleCondensed="AllBoards"
+            app:showAsAction="ifRoom" />
     </group>
 </menu>

@@ -8,11 +8,12 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
-public class BoardsActivity extends FragmentActivity implements BoardListFragment.BoardListener, PostListFragment.PostListener {
+public class BoardsActivity extends AppCompatActivity implements BoardListFragment.BoardListener, PostListFragment.PostListener {
 	private SharedPreferences pref = null;
 	PostListFragment postlistFrag = null;
 	BoardListFragment boardlistFrag = null;
 	static final int ACTION_VIEW_POST = 1;
+	private String mode;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +28,16 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
         	boardlistFrag = new BoardListFragment();
         	Bundle bundle = new Bundle();
             assert getIntent().getExtras() != null;
-        	bundle.putString("mode", getIntent().getExtras().getString("boardlist_mode"));
+            mode = getIntent().getExtras().getString("boardlist_mode");
+        	bundle.putString("mode", mode);
         	boardlistFrag.setArguments(bundle);
         	getSupportFragmentManager().beginTransaction().replace(R.id.boardlist, boardlistFrag).commit();
+
+        	if (mode.equals("FAVBOARDS")) {
+        	    setTitle(R.string.favboards);
+			} else {
+        	    setTitle(R.string.allboards);
+			}
         }
 	}
 	
@@ -44,6 +52,7 @@ public class BoardsActivity extends FragmentActivity implements BoardListFragmen
             args.putString("board", board.title);
             postlistFrag.setArguments(args);
             getSupportFragmentManager().beginTransaction().replace(R.id.boardlist_postlist, postlistFrag).commit();
+            setTitle(board.title);
 		} else {
 			Intent intent = new Intent(this, PostListActivity.class);
 			intent.putExtra("board", board.title);

@@ -69,4 +69,6 @@
     <string name="please_input_post_title">没标题可不成啊</string>
     <string name="posted">发完了！</string>
     <string name="loading_post">看看写了啥……</string>
+    <string name="favboards">收藏夹"</string>
+    <string name="allboards">所有版面</string>
 </resources>
