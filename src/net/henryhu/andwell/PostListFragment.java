@@ -28,7 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener, SwipeRefreshLayout.OnRefreshListener {
+public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
 	private SwipeRefreshLayout mSwipeRefreshView;
