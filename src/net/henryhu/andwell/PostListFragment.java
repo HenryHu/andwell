@@ -8,24 +8,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
-public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener {
+public class PostListFragment extends ListFragment implements InputDialogFragment.InputDialogListener, SwipeRefreshLayout.OnRefreshListener {
 	private Activity myAct = null;
 	private SharedPreferences pref = null;
+	private SwipeRefreshLayout mSwipeRefreshView;
+	private FloatingActionButton mFab;
 	List<PostItem> postslist = new ArrayList<PostItem>();
 	BusyDialog busy;
 	ArrayAdapter<PostItem> adapter;
@@ -68,6 +75,26 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
 		board = pref.getString("board", "test");
        	loaded = false;
     }
+
+    @Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	    ViewGroup views = (ViewGroup)inflater.inflate(R.layout.postlist_list, container, false);
+	    mSwipeRefreshView = views.findViewById(R.id.swiperefresh);
+		mSwipeRefreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				refreshPosts();
+			}
+		});
+		mFab = views.findViewById(R.id.fab);
+		mFab.setOnClickListener(new View.OnClickListener() {
+		    @Override
+			public void onClick(View view) {
+		        newPost();
+			}
+		});
+		return views;
+	}
     
     @Override
     public void onActivityCreated(Bundle saved) {
@@ -171,7 +198,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
         // Handle item selection
         switch (item.getItemId()) {
         case R.id.mRefreshAll_PostList:
-            loadPosts(0, 20, 0, 0);
+            refreshPosts();
             return true;
         case R.id.mJumpTo_PostList:
         	showInputDialog(getString(R.string.jumpto_title), getString(R.string.jumpto_withid), "", INPUT_DIALOG_ID);
@@ -183,6 +210,10 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
             return super.onOptionsItemSelected(item);
         }
     }
+
+    void refreshPosts() {
+		loadPosts(0, 20, 0, 0);
+	}
     
     void newPost() {
     	Intent intent = new Intent(myAct, NewPostActivity.class);
@@ -194,7 +225,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     {
     	loaded = true;
     	postslist.clear();
-        postslist.add(new PostItem(PostItem.ID_UPDATE));
+        //postslist.add(new PostItem(PostItem.ID_UPDATE));
         adapter.notifyDataSetChanged();
     	new LoadPostsTask(new MyLoadPostsListener()).execute(new LoadPostsArg(basePath, token, board, start, count, end, -1, selectid));
     }
@@ -235,11 +266,13 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     				}
     			}
     		}
+    		mSwipeRefreshView.setRefreshing(false);
     	}
     	
     	@Override
     	protected void onException(LoadPostsArg arg, Exception e) {
     		busy.hide();
+			mSwipeRefreshView.setRefreshing(false);
     		String errMsg;
 			if (arg.insertpos == 0)
 				errMsg = getString(R.string.no_more_post);
@@ -363,7 +396,7 @@ public class PostListFragment extends ListFragment implements InputDialogFragmen
     		onPostView(post_id, post_xid);
     	}
     }
-    
+
     @Override
     public void onResume() {
     	super.onResume();
