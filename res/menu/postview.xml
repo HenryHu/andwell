@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/mReply_PostView" android:titleCondensed="@string/postview_menu_reply" android:title="@string/postview_menu_reply" android:icon="@drawable/ic_menu_dialog"></item>
-    <item android:id="@+id/mRReply_PostView" android:titleCondensed="@string/postview_menu_rreply_short" android:title="@string/postview_menu_RReply" android:icon="@drawable/ic_menu_agenda"></item>
-    <item android:id="@+id/mThreadFirst_PostView" android:titleCondensed="@string/postview_menu_threadfirst_short" android:title="@string/postview_menu_threadfirst" android:icon="@drawable/ic_menu_directions"></item>
-    <item android:id="@+id/mThreadFirstNew_PostView" android:titleCondensed="@string/postview_menu_threadfirstnew" android:title="@string/postview_menu_threadfirstnew" android:icon="@drawable/ic_menu_add"></item>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/mReply_PostView"
+        android:icon="@drawable/ic_menu_dialog"
+        android:title="@string/postview_menu_reply"
+        android:titleCondensed="@string/postview_menu_reply"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mRReply_PostView"
+        android:icon="@drawable/ic_menu_agenda"
+        android:title="@string/postview_menu_RReply"
+        android:titleCondensed="@string/postview_menu_rreply_short"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mThreadFirst_PostView"
+        android:icon="@drawable/ic_menu_directions"
+        android:title="@string/postview_menu_threadfirst"
+        android:titleCondensed="@string/postview_menu_threadfirst_short"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/mThreadFirstNew_PostView"
+        android:icon="@drawable/ic_menu_add"
+        android:title="@string/postview_menu_threadfirstnew"
+        android:titleCondensed="@string/postview_menu_threadfirstnew"
+        app:showAsAction="ifRoom"/>
     
 
 </menu>
