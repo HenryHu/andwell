@@ -9,8 +9,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 
-public class PostListActivity extends FragmentActivity implements PostListFragment.PostListener, PostViewFragment.PostViewListener {
+public class PostListActivity extends AppCompatActivity implements PostListFragment.PostListener, PostViewFragment.PostViewListener {
 	private SharedPreferences pref = null;
 	private PostListFragment postlistFrag = null;
 	private PostViewFragment postviewFrag = null;

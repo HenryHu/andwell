@@ -8,8 +8,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 
-public class PostViewActivity extends FragmentActivity implements PostViewFragment.PostViewListener {
+public class PostViewActivity extends AppCompatActivity implements PostViewFragment.PostViewListener {
 	private SharedPreferences pref = null;
 	int last_post_id, last_post_xid;
 	ArrayList<Integer> post_viewed;
